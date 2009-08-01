@@ -15,6 +15,7 @@ from pylons import config, url
 from routes.util import URLGenerator
 from webtest import TestApp
 from afpy.ldap import custom as ldap
+from iw.email.testing import EmailTestCase
 
 import pylons.test
 
@@ -31,7 +32,7 @@ admin_environ = {'REMOTE_USER':'gawel', 'afpy.user':ldap.getUser('gawel'),
                     ),
                 }
 
-class TestController(TestCase):
+class TestController(EmailTestCase):
 
     def __init__(self, *args, **kwargs):
         if pylons.test.pylonsapp:

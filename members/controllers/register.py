@@ -52,16 +52,16 @@ class RegisterController(BaseController):
             if not h.DEV_MOD:
                 manage_ZopeUser('add', uid, passwd)
 
-                confirm_url = 'http://www.afpy.org' + h.url_for(
-                                        action='confirm',
-                                        uid=uid,
-                                        key=key)
-                mail = LDAPMailTemplate(
-                            name='send_key',
-                            subject='Votre inscription sur afpy.org',
-                            confirm_url=confirm_url, passwd=passwd,
-                            mfrom='noreply@afpy.org')
-                mail.send(uid)
+            confirm_url = 'http://www.afpy.org' + h.url_for(
+                                    action='confirm',
+                                    uid=user.uid,
+                                    key=key)
+            mail = LDAPMailTemplate(
+                        name='send_key',
+                        subject='Votre inscription sur afpy.org',
+                        confirm_url=confirm_url, passwd=passwd,
+                        mfrom='noreply@afpy.org')
+            mail.send(user)
             return u"""Votre inscription a été prise en compte. Vous allez
                     recevoir un courriel de confirmation."""
         return self.register_form(fs=form)

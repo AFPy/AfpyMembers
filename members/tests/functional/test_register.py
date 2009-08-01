@@ -35,7 +35,15 @@ class TestRegisterController(TestController):
         user = ldap.getUser('afpy_test_user')
         assert user is not None
 
-        response = self.app.get(url(controller='register', action='confirm', uid=user.uid, key=user.street))
+        mail = self.mail_output()
+        mail.mustcontain('afpy_test_user', user.street[0:6])
 
-        user.conn.delete(user)
-        assert ldap.getUser('afpy_test_user') is None
+        response = self.app.get(url(controller='register', action='confirm', uid=user.uid, key=user.street))
+        assert 'Votre+inscription+est+maintenant' in response.location, response
+
+
+    def tearDown(self):
+        user = ldap.getUser('afpy_test_user')
+        if user is not None:
+            user.conn.delete(user)
+
