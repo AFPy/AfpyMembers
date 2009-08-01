@@ -7,6 +7,8 @@ class CountriesRenderer(SelectFieldRenderer):
     def render(self, **kwargs):
         options = [(v.decode('utf-8'), k) for k, v in sorted(COUNTRIES.items())]
         return super(CountriesRenderer, self).render(options=options, **kwargs)
+    def render_readonly(self):
+        return COUNTRIES.get(self._value)
 
 class RoleRenderer(SelectFieldRenderer):
     def render(self, **kwargs):

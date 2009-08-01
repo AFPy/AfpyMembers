@@ -32,6 +32,7 @@ src="/afpy_print.png" style="width: 627px; height: 62px; border: none;"
             chez ${c.fs.sn.render_readonly()}<br />
             ${c.fs.street.render_readonly()}<br />
             ${c.fs.postalCode.render_readonly()}&nbsp;${c.fs.l.render_readonly()}<br/>
+            ${c.fs.st.render_readonly()}
   </div>
   <div class="corps">
       <p>Adhésion à l'AFPY pour <strong>${c.now.year}</strong></p>
