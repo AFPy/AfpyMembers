@@ -14,7 +14,6 @@ import members.lib.helpers as h
 import members.model as model
 
 from members.lib.afpy_helpers import *
-from members.lib.permissions import *
 
 
 class BaseController(WSGIController):
@@ -26,7 +25,7 @@ class BaseController(WSGIController):
         if self.user:
             self.user_id = environ['REMOTE_USER']
 
-        if self.user and self.user.uid.lower() in AdminUser.users:
+        if self.user and 'bureau' in self.user.groups:
             self.admin = True
         else:
             self.admin = False

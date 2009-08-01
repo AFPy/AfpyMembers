@@ -1,5 +1,10 @@
 import logging
 
+from repoze.what import predicates
+from repoze.what.plugins.pylonshq import ActionProtector
+from repoze.what.plugins.pylonshq import ControllerProtector
+
+
 from members.lib.base import *
 from members.forms.payments import NewPaymentForm, PaymentForm
 from datetime import datetime
@@ -14,7 +19,6 @@ def payment_dn(fs, id):
 
 class PaymentsController(BaseController):
 
-    @authorize(AfpyUser)
     def index(self):
         payments = self.user.payments
         c.forms = []
@@ -25,7 +29,7 @@ class PaymentsController(BaseController):
         c.user = self.user
         return render('/payments.mako')
 
-    @authorize(AdminUser)
+    @ActionProtector(predicates.in_group('bureau'))
     def edit(self, id, message=None):
         id = str(id)
         c.user = ldap.getUser(id)
@@ -59,7 +63,7 @@ class PaymentsController(BaseController):
         c.message = message
         return render('/edit_payments.mako')
 
-    @authorize(AdminUser)
+    @ActionProtector(predicates.in_group('bureau'))
     def delete(self, id):
         user = ldap.getUser(id)
         dn = request.POST['dn']
@@ -72,7 +76,7 @@ class PaymentsController(BaseController):
         message = 'Supprimer a %s' % datetime.now().strftime('%H:%M:%S')
         return self.edit(id, message=message)
 
-    @authorize(AdminUser)
+    @ActionProtector(predicates.in_group('bureau'))
     def add(self, id):
         id = str(id)
         payment = ldap.Payment()
@@ -88,3 +92,4 @@ class PaymentsController(BaseController):
         return self.edit(id, message=message)
 
 
+PaymentsController = ControllerProtector(predicates.not_anonymous())(PaymentsController)

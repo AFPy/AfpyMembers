@@ -1,5 +1,9 @@
 import logging
 
+from repoze.what import predicates
+from repoze.what.plugins.pylonshq import ActionProtector
+from repoze.what.plugins.pylonshq import ControllerProtector
+
 from members.lib.base import *
 from members.forms.users import NewUserForm
 from members.forms.payments import NewPaymentForm, PaymentForm
@@ -12,11 +16,9 @@ log = logging.getLogger(__name__)
 
 class AdminController(BaseController):
 
-    @authorize(AdminUser)
     def index(self):
         return ''
 
-    @authorize(AdminUser)
     def new(self):
         message = ''
         user = ldap.AfpyUser()
@@ -88,3 +90,6 @@ class AdminController(BaseController):
         html += h.end_form()
         c.body = html
         return render('/generic.mako')
+
+AdminController = ControllerProtector(predicates.in_group('bureau'))(AdminController)
+

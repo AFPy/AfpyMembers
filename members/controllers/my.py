@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 import datetime
 import logging
+
+from repoze.what import predicates
+from repoze.what.plugins.pylonshq import ActionProtector
+from repoze.what.plugins.pylonshq import ControllerProtector
+
 from members.lib.base import *
 from members.forms.users import UserForm, AdminUserForm
 from members.forms import ValidationError
@@ -48,12 +53,10 @@ def get_menu(menus, tag='dl', stag='dd', element='contents', **kwargs):
 
 class MyController(BaseController):
 
-    @authorize(AfpyUser)
     def index(self):
         c.user_id = self.user_id
         return render('/site.mako')
 
-    @authorize(AfpyUser)
     def courrier(self):
         c.u = self.user
         c.t = ldap.getUser('gawel')
@@ -62,7 +65,6 @@ class MyController(BaseController):
         request.environ['afpy.skin.none'] = True
         return render('/courrier.mako')
 
-    @authorize(AfpyUser)
     def bulletin(self):
         c.t = ldap.getUser('gawel')
         c.now = datetime.datetime.now()
@@ -70,7 +72,6 @@ class MyController(BaseController):
         request.environ['afpy.skin.none'] = True
         return render('/bulletin.mako')
 
-    @authorize(AfpyUser)
     def menu(self):
         """ left menu """
         user = self.user_id
@@ -118,7 +119,7 @@ class MyController(BaseController):
         </div><div>&nbsp;</div>
         """ % (user, html)
 
-    @authorize(AdminUser)
+    @ActionProtector(predicates.in_group('bureau'))
     def letters(self, id='all'):
         """ letters menu """
         stype = id
@@ -141,7 +142,6 @@ class MyController(BaseController):
                                       tag('legend', 'Navigation') + \
                    contents)
 
-    @authorize(AfpyUser)
     def info(self, id='', message=None):
         """ user form """
         user = id and ldap.getUser(id) or self.user
@@ -175,7 +175,6 @@ class MyController(BaseController):
                          **{'class':'context'}) + '</form>')
         return html
 
-    @authorize(AfpyUser)
     def save_info(self):
         """ save user form """
         admin = self.admin
@@ -194,7 +193,6 @@ class MyController(BaseController):
             message = None
         return self.info(id=user.uid, message=message)
 
-    @authorize(AfpyUser)
     def listes(self, id='', errors=''):
         user = id and ldap.getUser(id) or self.user
         admin = self.admin
@@ -240,7 +238,6 @@ class MyController(BaseController):
 
         return content_tag('fieldset', html)
 
-    @authorize(AfpyUser)
     def save_listes(self):
         """ save mailing lists
         """
@@ -267,7 +264,7 @@ class MyController(BaseController):
                 del ml[email]
         return self.listes(id=self.user_id, errors=[form_message(u'Modification sauvegardées')])
 
-    @authorize(AdminUser)
+    @ActionProtector(predicates.in_group('bureau'))
     def subscribers(self, stype='', letter=''):
         """ get subscribers listing """
         if stype == 'members':
@@ -286,7 +283,6 @@ class MyController(BaseController):
         c.members = members
         return render('/listing.mako')
 
-    @authorize(AfpyUser)
     def subscribe_form(self):
         c.uid = self.user_id
 
@@ -339,7 +335,6 @@ class MyController(BaseController):
         c.user_id = self.user_id
         return render('/subscribe_form.mako')
 
-    @authorize(AfpyUser)
     def subscribe(self):
         user = self.user
         paymentObject = request.POST.get('paymentObject')
@@ -401,7 +396,6 @@ class MyController(BaseController):
 
         return render('/subscribe.mako')
 
-    @authorize(AfpyUser)
     def password_form(self,errors=''):
         element = 'contents'
         errors = display_errors(errors)
@@ -418,7 +412,6 @@ class MyController(BaseController):
                    update=dict(success=element, failure=element)) + \
                errors + form + h.end_form()
 
-    @authorize(AfpyUser)
     def change_password(self):
         user = self.user
         passwd = request.POST.get('passwd')
@@ -452,3 +445,4 @@ class MyController(BaseController):
         return self.password_form(errors=errors)
 
 
+MyController = ControllerProtector(predicates.not_anonymous())(MyController)

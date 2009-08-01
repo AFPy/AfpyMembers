@@ -24,7 +24,12 @@ __all__ = ['environ', 'url', 'TestController', 'admin_environ']
 SetupCommand('setup-app').run([config['__file__']])
 
 environ = {}
-admin_environ = {'REMOTE_USER':'gawel', 'afpy.user':ldap.getUser('gawel')}
+admin_environ = {'REMOTE_USER':'gawel', 'afpy.user':ldap.getUser('gawel'),
+                'repoze.what.credentials': dict(
+                    groups=("bureau",),
+                    permissions=[],
+                    ),
+                }
 
 class TestController(TestCase):
 
