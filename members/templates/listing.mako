@@ -3,28 +3,21 @@
 <div id="${uid}">
     <b style="font-size:120%">${uid}</b>
     (infos
-    ${h.link_to_remote('+', dict(update='infos_%s' % uid,
-                       url=h.url_for(action='info', id=uid)))|n}
+    ${h.load_link('#infos_%s' % uid, controller='my', action='info', id=uid)|n}
     /
-    ${h.link_to_function('-', h.update_element_function(
-                                'infos_%s' % uid, action='empty'))|n}
+    ${h.close_link('#infos_%s' % uid)|n}
     )
 
     (listes
-    ${h.link_to_remote('+', dict(update='listes_%s' % uid,
-                        url=h.url_for(action='listes', id=uid)))|n}
+    ${h.load_link('#listes_%s' % uid, controller='my', action='listes', id=uid)|n}
     /
-    ${h.link_to_function('-',
-        h.update_element_function('listes_%s' % uid, action='empty'))|n}
+    ${h.close_link('#listes_%s' % uid)|n}
     )
 
     (paiements
-    ${h.link_to_remote('+', dict(update='payments_%s' % uid,
-                         url=h.url_for(controller='payments',
-                         action='edit', id=uid)))|n}
+    ${h.load_link('#payments_%s' % uid, controller='payments', action='edit', id=uid)|n}
     /
-    ${h.link_to_function('-',
-       h.update_element_function('payments_%s' % uid, action='empty'))|n}
+    ${h.close_link('#payments_%s' % uid)|n}
 
     )
 </div>

@@ -4,6 +4,10 @@
     <title>Espace membre</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     ${h.javascript_include_tag('/javascripts/prototype.js')|n}
+    ${h.javascript_include_tag('/javascripts/jquery-1.3.2.min.js')|n}
+    <script type="text/javascript">
+      jQuery.noConflict();
+    </script>
     <style type="text/css">
     td#portal-column-two { display:none; }
     div#menu dl,
@@ -35,8 +39,7 @@
         ${self.body()|n}
     </div>
     <script language="javascript">
-    ${h.remote_function(update='wsgi_menu',
-                        url=h.url(controller='my',action='menu',id=c.user_id))|n};
+    ${h.load_html('#wsgi_menu', controller='my',action='menu',id=c.user_id)}
     try {loadContents();} catch (e) {};
     </script>
     </div>

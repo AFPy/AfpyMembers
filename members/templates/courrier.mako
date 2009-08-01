@@ -18,26 +18,25 @@ src="/afpy_print.png" style="width: 627px; height: 62px; border: none;"
 /></a></div>
   <div>
   <div class="entete_gauche">    
-      ${c.u.sn}<br />
-      ${c.u.street}<br />
-      ${c.u.postalCode}&nbsp;${c.u.l}<br />
-      ${c.u.st_label}<br />
-      Tel : ${c.u.telephoneNumber}
+      ${c.u.sn.render_readonly()}<br />
+      ${c.u.street.render_readonly()}<br />
+      ${c.u.postalCode.render_readonly()}&nbsp;${c.u.l.render_readonly()}<br />
+      ${c.u.st.render_readonly()}<br />
+      Tel : ${c.u.telephoneNumber.render_readonly()}
   </div>
   <div class="entete_droit">
-      ${c.u.l}, le ${c.now.strftime('%d/%m/%Y')}
+      ${c.u.l.render_readonly()}, le ${c.now.strftime('%d/%m/%Y')}
   </div>
   <div class="adresse">
             ASSOCIATION FRANCOPHONE PYTHON<br />
-            chez ${c.t.sn}<br />
-            ${c.t.street}<br />
-            ${c.t.postalCode}&nbsp;${c.t.l}<br/>
-            ${c.t.st_label}
+            chez ${c.fs.sn.render_readonly()}<br />
+            ${c.fs.street.render_readonly()}<br />
+            ${c.fs.postalCode.render_readonly()}&nbsp;${c.fs.l.render_readonly()}<br/>
   </div>
   <div class="corps">
       <p>Adhésion à l'AFPY pour <strong>${c.now.year}</strong></p>
       <p>
-      Je, soussigné <strong>${c.u.sn}</strong>, déclare avoir pris connaissance
+      Je, soussigné <strong>${c.u.sn.render_readonly()}</strong>, déclare avoir pris connaissance
       des statuts et du réglement intérieur de l'AFPY et en accepter tous les
       termes.
       </p>

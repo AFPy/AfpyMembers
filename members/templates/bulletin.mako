@@ -34,10 +34,9 @@ src="/afpy_print.png" style="width: 627px; height: 62px; border: none;"
   </div>
   <div class="adresse">
             ASSOCIATION FRANCOPHONE PYTHON<br />
-            chez ${c.t.sn}<br />
-            ${c.t.street}<br />
-            ${c.t.postalCode}&nbsp;${c.t.l}<br/>
-            ${c.t.st_label}
+            chez ${c.fs.sn.render_readonly()}<br />
+            ${c.fs.street.render_readonly()}<br />
+            ${c.fs.postalCode.render_readonly()}&nbsp;${c.fs.l.render_readonly()}<br/>
   </div>
   <div class="corps">
       <p>Adhésion à l'AFPY pour <strong>${c.now.year}</strong></p>

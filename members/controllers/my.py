@@ -28,15 +28,6 @@ MEMBER_TYPES = (
 def form_message(message):
     return u'%s - %s' % (message, datetime.datetime.now().strftime('%H:%M:%S'))
 
-def url(*args):
-    action = h.url_for(controller='my', action=None, id=None)
-    if '?' in action:
-        action = action.split('?')[0]
-    query = u'/'.join(args)
-    if query:
-        return u'%s/%s' % (action, query)
-    return action
-
 def get_menu(menus, tag='dl', stag='dd', element='contents', **kwargs):
     html = u'<%s>' % tag
     for label, action in menus:
@@ -45,8 +36,7 @@ def get_menu(menus, tag='dl', stag='dd', element='contents', **kwargs):
         if 'no_remote' in action:
             html += h.link_to(label, u)
         else:
-            kwargs.update(dict(update=element, url=u))
-            html += h.link_to_remote(label, kwargs)
+            html += h.load_link('#%s' % element, text=label, url_=u)
         html += u'</%s>' % stag
     html += u'</%s>' % tag
     return html.encode('utf-8')
@@ -58,15 +48,18 @@ class MyController(BaseController):
         return render('/site.mako')
 
     def courrier(self):
-        c.u = self.user
-        c.t = ldap.getUser('gawel')
+        c.u = AdminUserForm.bind(self.user)
+        u = ldap.getUser('gawel')
+        c.fs = AdminUserForm.bind(u)
         c.now = datetime.datetime.now()
         request.headers['x-deliverance-no-theme'] = 'true'
         request.environ['afpy.skin.none'] = True
         return render('/courrier.mako')
 
     def bulletin(self):
-        c.t = ldap.getUser('gawel')
+        u = ldap.getUser('gawel')
+        c.fs = AdminUserForm.bind(u)
+        c.fs.readonly = True
         c.now = datetime.datetime.now()
         request.headers['x-deliverance-no-theme'] = 'true'
         request.environ['afpy.skin.none'] = True
@@ -75,15 +68,15 @@ class MyController(BaseController):
     def menu(self):
         """ left menu """
         user = self.user_id
-        menus = ((u'Mes informations',h.url_for(action='info')),
-                 ('Mes Listes', h.url_for(action='listes')),
-                 ('Mes paiements', h.url_for(controller='payments',
-                                             action=None)),
-                 ('Mon mot de passe', h.url_for(action='password_form')))
+        menus = ((u'Mes informations',h.url(controller='my', action='info')),
+                 ('Mes Listes', h.url(controller='my', action='listes')),
+                 ('Mes paiements', h.url(controller='payments',
+                                             action='index')),
+                 ('Mon mot de passe', h.url(controller='my', action='password_form')))
 
         if self.user.expired:
             menus = ((u"<span style='color:red'>Adhérer à l'afpy</span>",
-                      h.url_for(action='subscribe_form',
+                      h.url(controller='my', action='subscribe_form',
                                 no_remote='true')),) + menus
         html = get_menu(menus,
                     complete=h.update_element_function('letters',
@@ -96,10 +89,10 @@ class MyController(BaseController):
                                                            action='empty'))
             menus = (
                      (u"Inscription manuelle",
-                      h.url_for(controller='admin', action='new',
+                      h.url(controller='admin', action='new',
                                 no_remote='true')),
                      (u"Impression bulletin",
-                      h.url_for(controller='my', action='bulletin',
+                      h.url(controller='my', action='bulletin',
                                 no_remote='true', notheme='')),
                     )
             html += get_menu(menus,
@@ -128,13 +121,13 @@ class MyController(BaseController):
                 break
         if v == 'search':
             form = h.form_remote_tag(
-                   url=h.url_for(action='subscribers',
+                   url=h.url(controller='my', action='subscribers',
                                  stype='search', letter='all'),
                    update=dict(success='contents', failure='contents'))
             contents = form + h.text_field('letter') + \
                        h.submit('Rechercher') + h.end_form()
         else:
-            menus = [(l.upper(), h.url_for(action='subscribers',
+            menus = [(l.upper(), h.url(controller='my', action='subscribers',
                                        stype=stype,letter=l)) \
                     for l in string.ascii_lowercase]
             contents = get_menu(menus, tag='div', stag='span')
