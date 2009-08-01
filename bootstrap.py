@@ -24,30 +24,61 @@ import os, shutil, sys, tempfile, urllib2
 
 tmpeggs = tempfile.mkdtemp()
 
-ez = {}
-exec urllib2.urlopen('http://peak.telecommunity.com/dist/ez_setup.py'
-                     ).read() in ez
-ez['use_setuptools'](to_dir=tmpeggs, download_delay=0)
+is_jython = sys.platform.startswith('java')
 
-import pkg_resources
+try:
+    import pkg_resources
+except ImportError:
+    ez = {}
+    exec urllib2.urlopen('http://peak.telecommunity.com/dist/ez_setup.py'
+                         ).read() in ez
+    ez['use_setuptools'](to_dir=tmpeggs, download_delay=0)
+
+    import pkg_resources
+
+if sys.platform == 'win32':
+    def quote(c):
+        if ' ' in c:
+            return '"%s"' % c # work around spawn lamosity on windows
+        else:
+            return c
+else:
+    def quote (c):
+        return c
 
 cmd = 'from setuptools.command.easy_install import main; main()'
-if sys.platform == 'win32':
-    cmd = '"%s"' % cmd # work around spawn lamosity on windows
+ws  = pkg_resources.working_set
 
-ws = pkg_resources.working_set
-assert os.spawnle(
-    os.P_WAIT, sys.executable, sys.executable,
-    '-c', cmd, '-mqNxd', tmpeggs, 'zc.buildout>=1.0.6',
-    dict(os.environ,
-         PYTHONPATH=
-         ws.find(pkg_resources.Requirement.parse('setuptools')).location
-         ),
-    ) == 0
+if len(sys.argv) > 2 and sys.argv[1] == '--version':
+    VERSION = '==%s' % sys.argv[2]
+    args = sys.argv[3:] + ['bootstrap']
+else:
+    VERSION = ''
+    args = sys.argv[1:] + ['bootstrap']
+
+if is_jython:
+    import subprocess
+
+    assert subprocess.Popen([sys.executable] + ['-c', quote(cmd), '-mqNxd',
+           quote(tmpeggs), 'zc.buildout' + VERSION],
+           env=dict(os.environ,
+               PYTHONPATH=
+               ws.find(pkg_resources.Requirement.parse('setuptools')).location
+               ),
+           ).wait() == 0
+
+else:
+    assert os.spawnle(
+        os.P_WAIT, sys.executable, quote (sys.executable),
+        '-c', quote (cmd), '-mqNxd', quote (tmpeggs), 'zc.buildout' + VERSION,
+        dict(os.environ,
+            PYTHONPATH=
+            ws.find(pkg_resources.Requirement.parse('setuptools')).location
+            ),
+        ) == 0
 
 ws.add_entry(tmpeggs)
-ws.require('zc.buildout')
+ws.require('zc.buildout' + VERSION)
 import zc.buildout.buildout
-zc.buildout.buildout.main(sys.argv[1:] + ['bootstrap'])
+zc.buildout.buildout.main(args)
 shutil.rmtree(tmpeggs)
-
