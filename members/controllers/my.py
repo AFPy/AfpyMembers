@@ -12,7 +12,6 @@ from members.forms import ValidationError
 from webhelpers.rails.tags import content_tag
 from afpy.core import mailman
 from afpy.mail import LDAPMailTemplate
-from afpy.mail.ldap import getAddress
 import string, datetime
 
 log = logging.getLogger(__name__)
@@ -330,9 +329,9 @@ class MyController(BaseController):
 
     def subscribe(self):
         user = self.user
-        paymentObject = request.POST.get('paymentObject')
-        paymentMode = request.POST.get('paymentMode')
-        paymentComment = request.POST.get('paymentComment')
+        paymentObject = request.POST.get('paymentObject', '')
+        paymentMode = request.POST.get('paymentMode', '')
+        paymentComment = request.POST.get('paymentComment', '')
 
         if not paymentMode:
             raise RuntimeError('No paymentMode')
@@ -342,11 +341,8 @@ class MyController(BaseController):
                                      action='subscribe_form',
                                      error='payed'))
 
-        member=user.getMemberData()
-        address=getAddress('tresorier')
-
         c.user = user
-        c.address = address.replace('\n', '<br />')
+        c.signature = ldap.getUserByTitle('tresorier')
         c.amount = paymentObject == ldap.PERSONNAL_MEMBERSHIP and 20 or 10
         c.paymentMode = paymentMode
 
@@ -356,11 +352,12 @@ class MyController(BaseController):
         if last_payment:
             last_payment = last_payment[-1]
             d = last_payment.paymentDate
-            d = h.to_python(h.to_string(d), datetime)
+            d = h.to_python(h.to_string(d), datetime.datetime)
             if d + datetime.timedelta(365) < now - datetime.timedelta(90):
                 paymentDate = d + datetime.timedelta(365)
         if not paymentDate:
             paymentDate = now
+        paymentDate = h.to_python(h.to_string(d), datetime.date)
 
         if not h.DEV_MOD and mailman.subscribeTo('afpy-membres', user) > 0:
             return redirect_to(url(controller='my',
@@ -374,18 +371,14 @@ class MyController(BaseController):
         payment.invoiceReference = paymentComment
         user.append(payment)
 
-        if not h.DEV_MOD:
-            mail = LDAPMailTemplate(name='new_subscription',
-                                subject=u"[AFPy-adhésion] Accusé de réception",
-                                signature='tresorier',
-                                member=member,
-                                address=address,
-                                paymentObject=paymentObject,
-                                paymentMode=paymentMode,
-                                paymentComment=paymentComment,
-                                )
+        mail = LDAPMailTemplate(name='new_subscription',
+                            subject=u"[AFPy-adhésion] Accusé de réception",
+                            paymentObject=paymentObject,
+                            paymentMode=paymentMode,
+                            paymentComment=paymentComment,
+                            )
 
-            mail.send(user, cc='tresorerie@afpy.org')
+        mail.send(user, cc='tresorerie@afpy.org')
 
         return render('/subscribe.mako')
 

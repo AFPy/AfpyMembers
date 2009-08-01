@@ -1,4 +1,5 @@
 from members.tests import *
+from afpy.ldap import custom as ldap
 
 class TestMyController(TestController):
 
@@ -53,3 +54,39 @@ class TestMyController(TestController):
                                 extra_environ=admin_environ)
         resp.mustcontain('gawel', 'infos', '+')
 
+
+    def test_subscribe_payed(self):
+        resp = self.app.post(url(controller='my', action='subscribe'),
+                             dict(paymentComment='my comment',
+                                  paymentObject=ldap.PERSONNAL_MEMBERSHIP,
+                                  paymentMode='payed'),
+                              extra_environ=admin_environ)
+
+        resp.mustcontain("Un courriel vous a")
+
+        mail = self.mail_output()
+        mail.mustcontain("- Mode de paiement: payed", 'my comment')
+
+    def test_subscribe_cheque(self):
+        resp = self.app.post(url(controller='my', action='subscribe'),
+                             dict(paymentComment='my comment',
+                                  paymentObject=ldap.PERSONNAL_MEMBERSHIP,
+                                  paymentMode='cheque'),
+                              extra_environ=admin_environ)
+
+        resp.mustcontain("vous devez maintenant nous faire parvenir", "Tresorier de l'association")
+
+        mail = self.mail_output()
+        mail.mustcontain("- Mode de paiement: cheque", 'my comment')
+
+    def test_subscribe_paypal(self):
+        resp = self.app.post(url(controller='my', action='subscribe'),
+                             dict(paymentComment='my comment',
+                                  paymentObject=ldap.PERSONNAL_MEMBERSHIP,
+                                  paymentMode='paypal'),
+                              extra_environ=admin_environ)
+
+        resp.mustcontain('https://www.paypal.com/fr/cgi-bin/webscr')
+
+        mail = self.mail_output()
+        mail.mustcontain("- Mode de paiement: paypal")

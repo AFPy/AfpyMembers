@@ -41,7 +41,10 @@ Vous y retrouverez aussi les informations ci-dessous nécessaires à la validati
  chèque à:
 </p>
 <pre>
-${c.address|n}
+Association Francophone Python
+A l'attention de ${c.signature.sn}, ${c.signature.title.title()} de l'association
+${c.signature.street}
+${c.signature.postalCode} ${c.signature.l}, France
 </pre>
 % endif
 
