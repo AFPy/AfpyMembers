@@ -12,3 +12,5 @@ class TestAdminController(TestController):
         resp = form.submit(extra_environ=admin_environ)
 
         resp.mustcontain('Vous devez saisir une valeur')
+
+

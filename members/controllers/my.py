@@ -43,7 +43,7 @@ def get_menu(menus, tag='dl', stag='dd', element='contents', **kwargs):
 class MyController(BaseController):
 
     def index(self):
-        c.user_id = self.user_id
+        c.user_id = self.user.uid
         return render('/site.mako')
 
     def courrier(self):

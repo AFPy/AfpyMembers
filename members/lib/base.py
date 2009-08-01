@@ -20,7 +20,8 @@ class BaseController(WSGIController):
 
     def __call__(self, environ, start_response):
         """Invoke the Controller"""
-        self.user = environ.get('afpy.user', None)
+        identity = environ.get('repoze.who.identity', {})
+        self.user = identity.get('user')
 
         if self.user:
             self.user_id = environ['REMOTE_USER']

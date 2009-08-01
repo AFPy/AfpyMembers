@@ -10,6 +10,9 @@ class UtilsController(BaseController):
         return render('/personnal_bar.mako')
 
     def login(self):
+        came_from = request.params.get('came_from')
+        if self.user and came_from and 'members' not in came_from:
+            redirect_to(came_from)
         return render('/login.mako')
 
     def error(self):

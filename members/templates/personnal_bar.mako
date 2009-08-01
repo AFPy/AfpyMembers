@@ -2,7 +2,7 @@
 <div>
   <ul id="portal-personaltools">
   <%
-  user = request.environ.get('afpy.user', None)
+  user = request.environ.get('repoze.who.identity', {}).get('user', None)
   %>
   %if user is not None:
     <li class="portalUser"><a href="http://www.afpy.org/Members/${user.uid}" id="user-name">

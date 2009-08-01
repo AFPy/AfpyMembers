@@ -4,7 +4,8 @@
   </head>
   <body>
   <%
-  user = request.environ.get('afpy.user', None)
+  user = request.environ.get('repoze.who.identity', {}).get('user', None)
+  came_from = request.params.get('came_from', url(controller='utils', action='login'))
   %>
 %if user is not None:
     <h1>Bienvenu ${user.cn}. Vous êtes maintenant identifié</h1>
@@ -12,7 +13,7 @@
     <h1>Authentification</h1>
     <p class="documentDescription">&nbsp;</p>
   
-<form method="post" action="/do_login?came_from=/">
+<form method="post" action="/do_login">
 
 <fieldset>
 
@@ -33,7 +34,7 @@
 <div class="formControls">
 <input type="submit" value="Connexion" name="submit" tabindex="4" class="context"/>
 </div>
-<input type="hidden" value="/membres/login" name="came_from" />
+<input type="hidden" value="${came_from}" name="came_from" />
 
 </fieldset>
 
