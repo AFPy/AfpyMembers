@@ -48,7 +48,7 @@ class MyController(BaseController):
 
     def courrier(self):
         c.u = AdminUserForm.bind(self.user)
-        u = ldap.getUser('gawel')
+        u = ldap.getUserByTtitle('tresorier')
         c.fs = AdminUserForm.bind(u)
         c.now = datetime.datetime.now()
         request.headers['x-deliverance-no-theme'] = 'true'
@@ -56,7 +56,7 @@ class MyController(BaseController):
         return render('/courrier.mako')
 
     def bulletin(self):
-        u = ldap.getUser('gawel')
+        u = ldap.getUserByTtitle('tresorier')
         c.fs = AdminUserForm.bind(u)
         c.fs.readonly = True
         c.now = datetime.datetime.now()
