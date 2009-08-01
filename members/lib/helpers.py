@@ -5,6 +5,7 @@ available to Controllers. This module is available to both as 'h'.
 """
 # Import helpers as desired, or define your own, ie:
 # from webhelpers.html.tags import checkbox, password
+import os
 from webhelpers import *
 from webhelpers.rails import *
 from webhelpers.rails.tags import *
@@ -25,4 +26,6 @@ def load_link(element, text='+', url_=None, **kwargs):
 
 def close_link(element):
     return '<a href="javascript:void(0);" onclick="jQuery(%r).empty();">-</a>' % element
+
+DEV_MOD = not os.path.isdir('/home/afpy')
 

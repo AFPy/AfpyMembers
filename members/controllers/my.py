@@ -282,7 +282,7 @@ class MyController(BaseController):
         for k in ['telephoneNumber', 'cn', 'l', 'birthDate',
                   'st', 'street', 'sn',
                   'postalCode', 'mail']:
-            if not getattr(user, k):
+            if not getattr(self.user, k):
                 c.user_id = self.user.uid
                 c.need_infos = True
                 return render('/subscribe_form.mako')
@@ -338,10 +338,9 @@ class MyController(BaseController):
             raise RuntimeError('No paymentMode')
 
         if paymentMode == 'payed' and not paymentComment.strip():
-            return redirect_to('http://www.afpy.org'+ \
-                    h.url_for(controller='my',
-                              action='subscribe_form',
-                              error='payed'))
+            return redirect_to(h.url(controller='my',
+                                     action='subscribe_form',
+                                     error='payed'))
 
         member=user.getMemberData()
         address=getAddress('tresorier')
@@ -353,38 +352,39 @@ class MyController(BaseController):
 
         paymentDate = None
         now = datetime.datetime.now()
-        last_payment = user.lastRealPayment()
+        last_payment = [p for p in user.payments if p.paymentAmount]
         if last_payment:
-            d = last_payment.get('paymentDate')
+            last_payment = last_payment[-1]
+            d = last_payment.paymentDate
+            d = h.to_python(h.to_string(d), datetime)
             if d + datetime.timedelta(365) < now - datetime.timedelta(90):
                 paymentDate = d + datetime.timedelta(365)
         if not paymentDate:
             paymentDate = now
 
-        if mailman.subscribeTo('afpy-membres', user) > 0:
-            return redirect_to('http://www.afpy.org'+ \
-                    h.url_for(controller='my',
-                              action='subscribe_form',
-                              error='mailman'))
+        if not h.DEV_MOD and mailman.subscribeTo('afpy-membres', user) > 0:
+            return redirect_to(url(controller='my',
+                                   action='subscribe_form',
+                                   error='mailman'))
 
-        user.addPayment(paymentDate=paymentDate,
-                        paymentAmount=0,
-                        paymentObject=paymentObject,
-                        invoiceReference='awaiting')
+        payment = ldap.Payment()
+        payment.paymentDate = paymentDate
+        payment.paymentObject = paymentObject
+        payment.paymentAmount = c.amount
+        payment.invoiceReference = paymentComment
+        user.append(payment)
 
-        mail = LDAPMailTemplate(name='new_subscription',
-                            subject=u"[AFPy-adhésion] Accusé de réception",
-                            signature='tresorier',
-                            member=member,
-                            address=address,
-                            paymentObject=paymentObject,
-                            paymentMode=paymentMode,
-                            paymentComment=paymentComment,
-                            )
+        if not h.DEV_MOD:
+            mail = LDAPMailTemplate(name='new_subscription',
+                                subject=u"[AFPy-adhésion] Accusé de réception",
+                                signature='tresorier',
+                                member=member,
+                                address=address,
+                                paymentObject=paymentObject,
+                                paymentMode=paymentMode,
+                                paymentComment=paymentComment,
+                                )
 
-        if '/test_' in request.environ['SCRIPT_NAME']:
-            mail.send(user, cc='www@afpy.org')
-        else:
             mail.send(user, cc='tresorerie@afpy.org')
 
         return render('/subscribe.mako')
@@ -420,7 +420,7 @@ class MyController(BaseController):
             errors = ['Mot de passe incorect']
         else:
             if len(new) >= 6 and new == confirm:
-                ldap.changePassword(user.uid, new)
+                user.change_password(new)
                 manage_ZopeUser('edit', str(user.uid), new)
 
                 mail = LDAPMailTemplate(name='send_password',

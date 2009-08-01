@@ -15,8 +15,6 @@ import datetime
 
 log = logging.getLogger(__name__)
 
-DEV_MOD = not os.path.isdir('/home/afpy')
-
 class AdminController(BaseController):
 
     def index(self):
@@ -53,7 +51,7 @@ class AdminController(BaseController):
                 passwd = ''.join(random.sample(string.ascii_letters,6))
                 user.change_password(passwd)
 
-                if not DEV_MOD:
+                if not h.DEV_MOD:
                     manage_ZopeUser('add', uid, passwd)
 
                     # ml
