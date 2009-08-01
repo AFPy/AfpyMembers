@@ -1,4 +1,5 @@
 import logging
+import os
 
 from repoze.what import predicates
 from repoze.what.plugins.pylonshq import ActionProtector
@@ -14,6 +15,8 @@ import datetime
 
 log = logging.getLogger(__name__)
 
+DEV_MOD = not os.path.isdir('/home/afpy')
+
 class AdminController(BaseController):
 
     def index(self):
@@ -22,12 +25,14 @@ class AdminController(BaseController):
     def new(self):
         message = ''
         user = ldap.AfpyUser()
+        user.l = 'Paris'
         user.st = 'FR'
         fs = NewUserForm.bind(user, data=request.POST or None)
 
         payment = ldap.Payment()
         payment.paymentDate = h.to_python(h.to_string(datetime.datetime.now()), datetime.date)
         payment.paymentObject = ldap.PERSONNAL_MEMBERSHIP
+        payment.paymentAmount = 20
         fs2 = NewPaymentForm.bind(payment, data=request.POST or None)
 
         if request.POST:
@@ -47,23 +52,22 @@ class AdminController(BaseController):
                 # add user
                 passwd = ''.join(random.sample(string.ascii_letters,6))
                 user.change_password(passwd)
-                manage_ZopeUser('add', uid, passwd)
 
-                # ml
-                mailman.subscribeTo('afpy-membres', user)
+                if not DEV_MOD:
+                    manage_ZopeUser('add', uid, passwd)
 
-                # confirmation
-                mail = LDAPMailTemplate(
-                        name='new_members',
-                        subject='Votre inscription sur afpy.org',
-                        signature='tresorier',
-                        passwd=passwd,
-                        member=user,
-                        mfrom='noreply@afpy.org', **data)
+                    # ml
+                    mailman.subscribeTo('afpy-membres', user)
 
-                if '/test_' in request.environ['SCRIPT_NAME']:
-                    mail.send(user, cc='www@afpy.org')
-                else:
+                    # confirmation
+                    mail = LDAPMailTemplate(
+                            name='new_members',
+                            subject='Votre inscription sur afpy.org',
+                            signature='tresorier',
+                            passwd=passwd,
+                            member=user,
+                            mfrom='noreply@afpy.org', **data)
+
                     mail.send(user, cc='tresorerie@afpy.org')
 
                 # result in readonly
@@ -75,7 +79,7 @@ class AdminController(BaseController):
                 message = 'Utilisateur ajout&eacute; et son mot de passe envoy&eacute; par courriel'
 
         c.title = 'Inscription de membre'
-        html = h.form(h.url_for(), id="new_user")
+        html = h.form(h.url_for(id=None), id="new_user")
         html += fs.render(message=message)
         if fs2.readonly:
             html += '<table width="100%" class="payments_listing listing">'
@@ -89,7 +93,7 @@ class AdminController(BaseController):
             html += fs2.render()
         html += h.end_form()
         c.body = html
-        return render('/generic.mako')
+        return str(render('/generic.mako'))
 
 AdminController = ControllerProtector(predicates.in_group('bureau'))(AdminController)
 

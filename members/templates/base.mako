@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Espace membre</title>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
     ${h.javascript_include_tag('/javascripts/prototype.js')|n}
     <style type="text/css">
     td#portal-column-two { display:none; }

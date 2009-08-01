@@ -4,6 +4,7 @@ from formalchemy import SimpleMultiDict
 from formalchemy import validators
 from formalchemy import ValidationError
 from formalchemy import types
+from formalchemy import config
 from afpy.ldap import custom as ldap
 from afpy.ldap.forms import FieldSet as BaseFieldSet, Grid as BaseGrid, Field
 from datetime import timedelta
