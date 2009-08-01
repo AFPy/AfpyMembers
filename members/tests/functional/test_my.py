@@ -49,7 +49,7 @@ class TestMyController(TestController):
         resp = self.app.post(url(controller='my',
                                 action='subscribers', stype='search',
                                 letter='all'),
-                                dict(letter='gael'),
+                                dict(letter='pasgrimaud'),
                                 extra_environ=admin_environ)
         resp.mustcontain('gawel', 'infos', '+')
 
