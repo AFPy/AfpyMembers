@@ -1,0 +1,20 @@
+syntax: glob
+
+bin
+dist
+eggs
+parts
+data
+develop-eggs
+afpy.mail
+afpy.core
+afpy.ldap
+afpy.wsgi
+.svn
+.installed.cfg
+*.egg-info
+*.swp
+*.pyc
+*.pyo
+*.log
+

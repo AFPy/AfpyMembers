@@ -1,0 +1,3 @@
+include membersafpyorg/config/deployment.ini_tmpl
+recursive-include membersafpyorg/public *
+recursive-include membersafpyorg/templates *
