@@ -75,7 +75,7 @@ class AdminController(BaseController):
                 message = 'Utilisateur ajout&eacute; et son mot de passe envoy&eacute; par courriel'
 
         c.title = 'Inscription de membre'
-        html = h.form(h.url_for())
+        html = h.form(h.url_for(), id="new_user")
         html += fs.render(message=message)
         if fs2.readonly:
             html += '<table width="100%" class="payments_listing listing">'
