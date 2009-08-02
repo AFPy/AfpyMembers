@@ -7,6 +7,7 @@ from afpy.core import config
 from afpy.core.countries import COUNTRIES
 from base64 import encodestring, decodestring
 from urllib import quote, unquote
+import socket
 
 tag = content_tag
 
@@ -23,6 +24,8 @@ def manage_ZopeUser(action, name, passwd='', manager=0):
         server = xmlrpclib.Server('%s/ldap/' % config.zope_admin_url())
         return server.manage_User(action, user.cn or user.uid, passwd, manager)
     except xmlrpclib.Fault, e:
+        pass
+    except socket.error:
         pass
 
 def ldap_field(name, value, allowed=True, label=None):

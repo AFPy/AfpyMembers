@@ -91,22 +91,31 @@ class MyController(BaseController):
         </div><div>&nbsp;</div>
         """ % (user, html)
 
-    def info(self, id='', message=None):
+    def info(self, id=None):
         """ user form """
-        user = id and ldap.getUser(id) or self.user
         admin = self.admin
+        if admin and id:
+            user = ldap.getUser(id)
+        else:
+            user = self.user
 
-        html = title = ''
         if user != self.user and not admin:
             raise NotAuthorizedError()
 
+        html = title = ''
         if admin:
-            fs = AdminUserForm.bind(user)
+            fs = AdminUserForm.bind(user, data=request.POST or None)
         else:
-            fs = UserForm.bind(user)
-        if message:
+            fs = UserForm.bind(user, data=request.POST or None)
+
+        if request.POST and fs.validate():
+            fs.sync()
+            user.save()
+            fs.rebind(user)
+            message = form_message(u'Modifie').encode('utf-8')
             e = ValidationError(message)
             fs._errors = [e]
+
         html += fs.render()
 
         if admin and self.user != user:
@@ -115,7 +124,7 @@ class MyController(BaseController):
         else:
             element = 'contents'
             hidden = ''
-        form = h.form_remote_tag(url=h.url_for(action='save_info',id=None),
+        form = h.form_remote_tag(url=h.url(controller='my', action='info',id=id),
                                  update=dict(success=element, failure=element))
 
         html = title + tag('fieldset', tag('legend', u'Mes informations') + \
@@ -123,24 +132,6 @@ class MyController(BaseController):
                 h.submit("Sauver", name='save',
                          **{'class':'context'}) + '</form>')
         return html
-
-    def save_info(self):
-        """ save user form """
-        admin = self.admin
-        uid = request.POST.get('uid')
-        if admin and uid:
-            user = ldap.getUser(uid)
-        else:
-            user = self.user
-        fs = admin and AdminUserForm or UserForm
-        fs = fs.bind(user, data=request.POST)
-        if fs.validate():
-            fs.sync()
-            user.save()
-            message = form_message(u'Modifie').encode('utf-8')
-        else:
-            message = None
-        return self.info(id=user.uid, message=message)
 
     def listes(self, id='', errors=''):
         user = id and ldap.getUser(id) or self.user
