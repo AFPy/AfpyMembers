@@ -118,7 +118,7 @@ class MyController(BaseController):
 
         html += fs.render()
 
-        if admin and self.user != user:
+        if admin and id:
             element = 'infos_%s' % user.uid
             hidden = h.hidden_field('uid',user.uid)
         else:
