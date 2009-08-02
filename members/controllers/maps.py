@@ -40,7 +40,7 @@ class MapsController(BaseController):
             else:
                 coord = coords.get(short_address)
             if coord:
-                datas[short_address] = datas.get(short_address, []) + [user['uid']]
+                datas[short_address] = datas.get(short_address, []) + [user.uid]
         return {'result':[dict(point=[coords[k].get('lng'), coords[k].get('lat')], address=k,
                      users=''.join(['<div>%s</div>' % u for u in v])
                      ) for k, v in datas.items()]}

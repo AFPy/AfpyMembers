@@ -2,7 +2,6 @@
 import os, sys, logging, xmlrpclib
 from members.lib.base import h
 from webhelpers.rails.tags import content_tag
-from ldapadapter.interfaces import InvalidCredentials
 from afpy.ldap import custom as ldap
 from afpy.core import config
 from afpy.core.countries import COUNTRIES
