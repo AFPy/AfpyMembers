@@ -20,6 +20,51 @@ class AdminController(BaseController):
     def index(self):
         return ''
 
+    def letters(self, id='all'):
+        """ letters menu """
+        stype = id
+        for label,v in h.MEMBER_TYPES:
+            if stype == v:
+                break
+        if v == 'search':
+            form = h.form_remote_tag(
+                   url=h.url(controller='my', action='subscribers',
+                                 stype='search', letter='all'),
+                   update=dict(success='contents', failure='contents'))
+            contents = form + h.text_field('letter') + \
+                       h.submit('Rechercher') + h.end_form()
+        else:
+            menus = [(l.upper(), h.url(controller='admin', action='subscribers',
+                                       stype=stype,letter=l)) \
+                    for l in string.ascii_lowercase]
+            contents = h.get_menu(menus, tag='div', stag='span')
+        return tag('h1', label) + tag('fieldset',
+                                      tag('legend', 'Navigation') + \
+                   contents)
+
+    def subscribers(self, stype='', letter=''):
+        """ get subscribers listing """
+        if stype == 'members':
+            f = '(&(!(membershipExpirationDate=*))(uid=%s*))' % letter
+        elif stype == 'subscribers':
+            f = '(&(membershipExpirationDate=*)(uid=%s*))' % letter
+        elif stype == 'search':
+            letter = request.POST['letter']
+            f = '(&(objectClass=person)(sn=*%s*))' % letter
+        else:
+            f = '(&(objectClass=person)(uid=%s*))' % letter
+        conn = ldap.get_conn()
+        res = conn.search_nodes(filter=f, attrs=['uid'])
+        members = [m.uid for m in res]
+        members.sort()
+        c.members = members
+        return render('/listing.mako')
+
+    def awaiting(self):
+        c.listing_title = 'Payments en attente'
+        c.members = ldap.getAwaitingPayments()
+        return render('/listing.mako')
+
     def new(self):
         message = ''
         user = ldap.AfpyUser()

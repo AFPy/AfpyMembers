@@ -29,7 +29,7 @@ def make_map():
     map.connect('/adhesion', controller='my',
                             action='subscribe_form')
     # ajax stuff
-    map.connect('/my/subscribers/{stype}/{letter}', controller='my', action='subscribers')
+    map.connect('/admin/subscribers/{stype}/{letter}', controller='admin', action='subscribers')
     map.connect('/my/save_payment/{act}/{uid}/{paymentDate}', controller='my',
                                         action='save_payment', paymentDate=None)
 

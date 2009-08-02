@@ -18,27 +18,8 @@ log = logging.getLogger(__name__)
 
 tag = content_tag
 
-MEMBER_TYPES = (
-        (u'Liste des inscrits','all'),
-        (u'Liste des adhérents','subscribers'),
-        (u'Liste des non adhérents','membres'),
-        (u'Recherche','search'),)
-
 def form_message(message):
     return u'%s - %s' % (message, datetime.datetime.now().strftime('%H:%M:%S'))
-
-def get_menu(menus, tag='dl', stag='dd', element='contents', **kwargs):
-    html = u'<%s>' % tag
-    for label, action in menus:
-        html += u' <%s>' % stag
-        u = action.startswith('/') and action or url(action)
-        if 'no_remote' in action:
-            html += h.link_to(label, u)
-        else:
-            html += h.load_link('#%s' % element, text=label, url_=u)
-        html += u'</%s>' % stag
-    html += u'</%s>' % tag
-    return html.encode('utf-8')
 
 class MyController(BaseController):
 
@@ -77,15 +58,16 @@ class MyController(BaseController):
             menus = ((u"<span style='color:red'>Adhérer à l'afpy</span>",
                       h.url(controller='my', action='subscribe_form',
                                 no_remote='true')),) + menus
-        html = get_menu(menus,
-                    complete=h.update_element_function('letters',
-                                                        action='empty'))
+        html = h.get_menu(menus, empty='letters')
+
         if self.admin:
             user += ' (Admin)'
-            menus = [(l, h.url_for(action='letters', id=v)) for l,v in MEMBER_TYPES]
-            html += get_menu(menus, element='letters',
-                        complete=h.update_element_function('contents',
-                                                           action='empty'))
+            menus = [(l, h.url(controller='admin', action='letters', id=v)) for l,v in h.MEMBER_TYPES]
+            html += h.get_menu(menus, element='letters', empty='contents')
+
+            menus = [(l, h.url(controller='admin', action=v)) for l,v in [('Payments en attente', 'awaiting')]]
+            html += h.get_menu(menus, element='contents', empty='letters')
+
             menus = (
                      (u"Inscription manuelle",
                       h.url(controller='admin', action='new',
@@ -94,9 +76,7 @@ class MyController(BaseController):
                       h.url(controller='my', action='bulletin',
                                 no_remote='true', notheme='')),
                     )
-            html += get_menu(menus,
-                        complete=h.update_element_function('letters',
-                                                            action='empty'))
+            html += h.get_menu(menus)
 
         # plone presentation...
         html = html.replace('dl>','div>')
@@ -110,29 +90,6 @@ class MyController(BaseController):
             </div>
         </div><div>&nbsp;</div>
         """ % (user, html)
-
-    @ActionProtector(predicates.in_group('bureau'))
-    def letters(self, id='all'):
-        """ letters menu """
-        stype = id
-        for label,v in MEMBER_TYPES:
-            if stype == v:
-                break
-        if v == 'search':
-            form = h.form_remote_tag(
-                   url=h.url(controller='my', action='subscribers',
-                                 stype='search', letter='all'),
-                   update=dict(success='contents', failure='contents'))
-            contents = form + h.text_field('letter') + \
-                       h.submit('Rechercher') + h.end_form()
-        else:
-            menus = [(l.upper(), h.url(controller='my', action='subscribers',
-                                       stype=stype,letter=l)) \
-                    for l in string.ascii_lowercase]
-            contents = get_menu(menus, tag='div', stag='span')
-        return tag('h1', label) + tag('fieldset',
-                                      tag('legend', 'Navigation') + \
-                   contents)
 
     def info(self, id='', message=None):
         """ user form """
@@ -256,24 +213,6 @@ class MyController(BaseController):
                 del ml[email]
         return self.listes(id=self.user_id, errors=[form_message(u'Modification sauvegardées')])
 
-    @ActionProtector(predicates.in_group('bureau'))
-    def subscribers(self, stype='', letter=''):
-        """ get subscribers listing """
-        if stype == 'members':
-            f = '(&(!(membershipExpirationDate=*))(uid=%s*))' % letter
-        elif stype == 'subscribers':
-            f = '(&(membershipExpirationDate=*)(uid=%s*))' % letter
-        elif stype == 'search':
-            letter = request.POST['letter']
-            f = '(&(objectClass=person)(sn=*%s*))' % letter
-        else:
-            f = '(&(objectClass=person)(uid=%s*))' % letter
-        conn = ldap.get_conn()
-        res = conn.search_nodes(filter=f, attrs=['uid'])
-        members = [m.uid for m in res]
-        members.sort()
-        c.members = members
-        return render('/listing.mako')
 
     def subscribe_form(self):
         c.uid = self.user_id

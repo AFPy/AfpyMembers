@@ -26,7 +26,9 @@
 <div id="payments_${uid}"></div>
 </fieldset>
 </%def>
-
+%if c.listing_title:
+<h1>${c.listing_title}</h1>
+%endif
 %if not c.members:
 <div>Aucuns resultats</div>
 %endif
