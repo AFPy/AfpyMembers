@@ -44,22 +44,19 @@ class PasswordController(BaseController):
         passwd = ''.join(random.sample(string.ascii_letters,6))
 
         if uid:
-            if ldap.isUser(uid):
-                user = ldap.User(uid)
-            else:
+            user = ldap.getUser(uid)
+            if not user:
                 errors.append('Impossible de trouver votre login')
 
         if not user and mail:
-            members = ldap.conn.search(ldap.conn.members_dn,filter='(mail=%s)' % mail)
+            members = conn.search_nodes(conn_class=ldap.AfpyUser, filter='(mail=%s)' % mail)
             if len(members) == 1:
-                dn = members[0][0]
-                dn = ldap.getDN(dn)
-                user = ldap.User(dn)
+                user = members[0]
             else:
                 errors.append('Impossible de trouver votre courriel')
 
         if user:
-            ldap.changePassword(user.uid, passwd)
+            user.change_password(passwd)
             manage_ZopeUser('edit', str(user.uid), passwd)
 
             mail = LDAPMailTemplate(name='send_password',
