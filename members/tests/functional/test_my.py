@@ -57,7 +57,7 @@ class TestMyController(TestController):
 
     def test_subscribe_payed(self):
         resp = self.app.post(url(controller='my', action='subscribe'),
-                             dict(paymentComment='my comment',
+                             dict(paymentComment='my comment payed',
                                   paymentObject=ldap.PERSONNAL_MEMBERSHIP,
                                   paymentMode='payed'),
                               extra_environ=admin_environ)
@@ -67,9 +67,12 @@ class TestMyController(TestController):
         mail = self.mail_output()
         mail.mustcontain("- Mode de paiement: payed", 'my comment')
 
+        u = ldap.getUser('gawel')
+        assert 'payed' in u.payments[-1].invoiceReference
+
     def test_subscribe_cheque(self):
         resp = self.app.post(url(controller='my', action='subscribe'),
-                             dict(paymentComment='my comment',
+                             dict(paymentComment='my comment cheque',
                                   paymentObject=ldap.PERSONNAL_MEMBERSHIP,
                                   paymentMode='cheque'),
                               extra_environ=admin_environ)
@@ -79,9 +82,12 @@ class TestMyController(TestController):
         mail = self.mail_output()
         mail.mustcontain("- Mode de paiement: cheque", 'my comment')
 
+        u = ldap.getUser('gawel')
+        assert 'cheque' in u.payments[-1].invoiceReference
+
     def test_subscribe_paypal(self):
         resp = self.app.post(url(controller='my', action='subscribe'),
-                             dict(paymentComment='my comment',
+                             dict(paymentComment='my comment paypal',
                                   paymentObject=ldap.PERSONNAL_MEMBERSHIP,
                                   paymentMode='paypal'),
                               extra_environ=admin_environ)
@@ -90,3 +96,6 @@ class TestMyController(TestController):
 
         mail = self.mail_output()
         mail.mustcontain("- Mode de paiement: paypal")
+
+        u = ldap.getUser('gawel')
+        assert 'paypal' in u.payments[-1].invoiceReference
