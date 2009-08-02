@@ -19,6 +19,10 @@ from iw.email.testing import EmailTestCase
 
 import pylons.test
 
+from members.lib import afpy_helpers
+
+afpy_helpers.manage_ZopeUser = lambda *args, **kwargs: True
+
 __all__ = ['environ', 'url', 'TestController', 'admin_environ']
 
 # Invoke websetup with the current config file

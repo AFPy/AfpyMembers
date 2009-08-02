@@ -24,6 +24,7 @@ def manage_ZopeUser(action, name, passwd='', manager=0):
         return server.manage_User(action, user.cn or user.uid, passwd, manager)
     except xmlrpclib.Fault, e:
         pass
+
 def ldap_field(name, value, allowed=True, label=None):
     if label is None:
         if label == 'passwd':

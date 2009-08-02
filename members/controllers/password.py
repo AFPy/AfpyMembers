@@ -2,6 +2,7 @@
 import logging
 
 from members.lib.base import *
+from members.lib.afpy_helpers import manage_ZopeUser, display_errors, ldap_field
 from webhelpers.rails.tags import content_tag
 from afpy.ldap import custom as ldap
 from afpy.mail import LDAPMailTemplate
