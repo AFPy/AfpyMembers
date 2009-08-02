@@ -120,15 +120,15 @@ class MyController(BaseController):
 
         if admin and id:
             element = 'infos_%s' % user.uid
-            hidden = h.hidden_field('uid',user.uid)
+            url = h.url(controller='my', action='info',id=id)
         else:
             element = 'contents'
-            hidden = ''
-        form = h.form_remote_tag(url=h.url(controller='my', action='info',id=id),
+            url = h.url(controller='my', action='info')
+        form = h.form_remote_tag(url=url,
                                  update=dict(success=element, failure=element))
 
         html = title + tag('fieldset', tag('legend', u'Mes informations') + \
-                form + hidden + tag('table', html) + \
+                form + tag('table', html) + \
                 h.submit("Sauver", name='save',
                          **{'class':'context'}) + '</form>')
         return html
