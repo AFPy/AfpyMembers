@@ -28,7 +28,7 @@ class AdminController(BaseController):
                 break
         if v == 'search':
             form = h.form_remote_tag(
-                   url=h.url(controller='my', action='subscribers',
+                   url=h.url(controller='admin', action='subscribers',
                                  stype='search', letter='all'),
                    update=dict(success='contents', failure='contents'))
             contents = form + h.text_field('letter') + \

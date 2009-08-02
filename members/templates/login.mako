@@ -13,7 +13,7 @@
     <h1>Authentification</h1>
     <p class="documentDescription">&nbsp;</p>
   
-<form method="post" action="/do_login">
+<form method="post" action="${request.environ.get('SCRIPT_NAME', '')}/do_login">
 
 <fieldset>
 
