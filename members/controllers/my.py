@@ -285,18 +285,19 @@ class MyController(BaseController):
         c.amount = paymentObject == ldap.PERSONNAL_MEMBERSHIP and 20 or 10
         c.paymentMode = paymentMode
 
-        paymentDate = None
+        paymentDate = request.POST.get('paymentDate', None)
         now = datetime.datetime.now()
-        last_payment = [p for p in user.payments if p.paymentAmount]
-        if last_payment:
-            last_payment = last_payment[-1]
-            d = last_payment.paymentDate
-            d = h.to_python(h.to_string(d), datetime.datetime)
-            if d + datetime.timedelta(365) < now - datetime.timedelta(90):
-                paymentDate = d + datetime.timedelta(365)
         if not paymentDate:
-            paymentDate = now
-        paymentDate = h.to_python(h.to_string(d), datetime.date)
+            last_payment = [p for p in user.payments if p.paymentAmount]
+            if last_payment:
+                last_payment = last_payment[-1]
+                d = last_payment.paymentDate
+                d = h.to_python(h.to_string(d), datetime.datetime)
+                if d + datetime.timedelta(365) < now:
+                    paymentDate = d + datetime.timedelta(365)
+            if not paymentDate:
+                paymentDate = now
+        paymentDate = h.to_python(h.to_string(paymentDate), datetime.date)
 
         if not h.DEV_MOD and mailman.subscribeTo('afpy-membres', user) > 0:
             return redirect_to(url(controller='my',

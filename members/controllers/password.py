@@ -3,7 +3,7 @@ import logging
 
 from members.lib.base import *
 from webhelpers.rails.tags import content_tag
-from afpy.ldap.custom import ldap
+from afpy.ldap import custom as ldap
 from afpy.mail import LDAPMailTemplate
 import md5, random, string
 

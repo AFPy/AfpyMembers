@@ -59,6 +59,7 @@ class PaymentsController(BaseController):
                 new_date = d + timedelta(365)
         payment = ldap.Payment()
         payment.paymentDate = new_date
+        payment.paymentObject = ldap.PERSONNAL_MEMBERSHIP
         c.new = NewPaymentForm.bind(payment, request.POST or None)
         c.message = message
         return render('/edit_payments.mako')
