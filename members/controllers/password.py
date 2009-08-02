@@ -3,6 +3,7 @@ import logging
 
 from members.lib.base import *
 from webhelpers.rails.tags import content_tag
+from afpy.ldap.custom import ldap
 from afpy.mail import LDAPMailTemplate
 import md5, random, string
 
@@ -49,7 +50,8 @@ class PasswordController(BaseController):
                 errors.append('Impossible de trouver votre login')
 
         if not user and mail:
-            members = conn.search_nodes(conn_class=ldap.AfpyUser, filter='(mail=%s)' % mail)
+            conn = ldap.get_conn()
+            members = conn.search_nodes(node_class=ldap.AfpyUser, filter='(mail=%s)' % mail)
             if len(members) == 1:
                 user = members[0]
             else:
