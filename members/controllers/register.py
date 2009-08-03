@@ -33,9 +33,9 @@ class RegisterController(BaseController):
     def register(self):
         conn = ldap.get_conn()
         user = ldap.AfpyUser()
-        form = RegisterForm.bind(user, data=request.POST)
+        form = RegisterForm.bind(user, data=request.POST or None)
 
-        if form.validate():
+        if 'AfpyUser--uid' in request.POST and form.validate():
             form.sync()
             passwd = str(form.password.value)
             delattr(user, 'password')
