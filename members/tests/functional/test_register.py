@@ -4,7 +4,7 @@ from afpy.ldap import custom as ldap
 class TestRegisterController(TestController):
 
     def test_index(self):
-        response = self.app.get(url(controller='register',
+        response = self.app.post(url(controller='register',
                                         action='register_form'))
         form = response.forms[0]
         form['AfpyUser--uid'] = 'gawel'
