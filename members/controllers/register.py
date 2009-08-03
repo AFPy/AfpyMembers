@@ -47,10 +47,10 @@ class RegisterController(BaseController):
             user.street = key
             user._dn = conn.uid2dn(user.uid)
             conn.add(user)
-            user.change_password(str(form.password.value))
+            user.change_password(passwd)
 
             if not h.DEV_MOD:
-                manage_ZopeUser('add', uid, passwd)
+                manage_ZopeUser('add', user.uid, passwd)
 
             confirm_url = 'http://www.afpy.org' + h.url_for(
                                     action='confirm',
