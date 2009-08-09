@@ -106,10 +106,11 @@ class AdminController(BaseController):
                     mail = LDAPMailTemplate(
                             name='new_members',
                             subject='Votre inscription sur afpy.org',
+                            paymentObject=payment.paymentObject,
                             signature='tresorier',
                             passwd=passwd,
                             member=user,
-                            mfrom='noreply@afpy.org', **data)
+                            mfrom='noreply@afpy.org')
 
                     mail.send(user, cc='tresorerie@afpy.org')
 

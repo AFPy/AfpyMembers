@@ -25,6 +25,8 @@ class BaseController(WSGIController):
 
         if self.user:
             self.user_id = environ['REMOTE_USER']
+        else:
+            self.user_id = None
 
         if self.user and 'bureau' in self.user.groups:
             self.admin = True
