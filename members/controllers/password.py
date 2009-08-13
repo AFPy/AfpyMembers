@@ -26,8 +26,8 @@ class PasswordController(BaseController):
                                          votre mot de passe""",
                                          **{'class':'documentDescription'})
         form = ''
-        for name, value in (('uid',uid),('mail',mail)):
-            form += ldap_field(name, value)
+        for name, value, label in (('uid',uid, 'login'),('mail',mail, 'e-mail')):
+            form += ldap_field(name, value, label=label)
         form += h.content_tag('td',
                 h.submit('Valider', name='validate', **{'class':'context'}),
                 colspan="2", align='center')
