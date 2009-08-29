@@ -5,7 +5,10 @@ from members.forms import FieldSet as BaseFieldSet
 __doc__ = '''
 >>> from afpy.ldap import custom as ldap
 >>> payments = ldap.getUser('gawel').payments
->>> form = PaymentForm.bind(payments[0])
+>>> payment = payments[0]
+>>> getattr(payment, 'paymentDate')
+datetime.date(2005, 1, 1)
+>>> form = PaymentForm.bind(payment)
 >>> form.paymentDate.render()
 '2005-01-01'
 >>> form.paymentAmount.value
