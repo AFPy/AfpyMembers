@@ -15,7 +15,7 @@
     </li>
     <li>
     <a href="/membres/">
-    Mes pr&eacute;f&eacute;rences
+    Mon compte
     </a>
     </li>
     <li>
