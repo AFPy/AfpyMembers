@@ -12,6 +12,7 @@ from members.forms import ValidationError
 from webhelpers.rails.tags import content_tag
 from afpy.core import mailman
 from afpy.mail import LDAPMailTemplate
+from afpy.ldap import custom as ldap
 import string, datetime
 
 log = logging.getLogger(__name__)
@@ -29,10 +30,10 @@ class MyController(BaseController):
 
     def courrier(self):
         c.u = AdminUserForm.bind(self.user)
-        u = ldap.getUserByTtitle('tresorier')
+        u = ldap.getUserByTitle('tresorier')
         c.fs = AdminUserForm.bind(u)
         c.now = datetime.datetime.now()
-        request.headers['x-deliverance-no-theme'] = 'true'
+        response.headers['x-deliverance-no-theme'] = 'true'
         request.environ['afpy.skin.none'] = True
         return render('/courrier.mako')
 
@@ -41,7 +42,7 @@ class MyController(BaseController):
         c.fs = AdminUserForm.bind(u)
         c.fs.readonly = True
         c.now = datetime.datetime.now()
-        request.headers['x-deliverance-no-theme'] = 'true'
+        response.headers['x-deliverance-no-theme'] = 'true'
         request.environ['afpy.skin.none'] = True
         return render('/bulletin.mako')
 
@@ -74,7 +75,7 @@ class MyController(BaseController):
                                 no_remote='true')),
                      (u"Impression bulletin",
                       h.url(controller='my', action='bulletin',
-                                no_remote='true', notheme='')),
+                                no_remote='true', notheme='true')),
                     )
             html += h.get_menu(menus)
 

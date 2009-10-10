@@ -14,7 +14,7 @@
   <body>
 
   <div class="bandeauPrint"><a href="javascript:window.print();"><img 
-src="/afpy_print.png" style="width: 627px; height: 62px; border: none;" 
+src="http://zope.afpy.org/afpy_print.png" style="width: 627px; height: 62px; border: none;" 
 /></a></div>
   <div>
   <div class="entete_gauche">    
@@ -48,7 +48,7 @@ src="/afpy_print.png" style="width: 627px; height: 62px; border: none;"
       <p>
       Je joins à ce courrier un chèque de <strong>20 euros</strong> libellé à
       l'ordre de l'<strong>AFPY</strong>, ce paiement est effectué au titre
-      de la cotisation <strong>2008</strong></p>
+      de la cotisation <strong>2009</strong></p>
       <p class="signature">
            Date :
            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

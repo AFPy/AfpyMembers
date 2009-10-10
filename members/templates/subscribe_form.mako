@@ -30,7 +30,7 @@ ${c.errors|n}
     <p>Je prends bien note que mon adhésion ne prendra effet qu'a 
      réception du paiement. Ainsi que du 
      ${h.link_to('courier de confirmation',
-                 h.url_for(action='courrier', notheme=''))|n}
+                 h.url_for(action='courrier', notheme='true'))|n}
      si c'est ma première adhésion.</p>
 
     ${h.form(h.url_for(controller='my', action='subscribe', id=None))|n}
