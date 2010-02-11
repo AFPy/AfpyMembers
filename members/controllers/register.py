@@ -69,12 +69,14 @@ class RegisterController(BaseController):
     def confirm(self, uid, key):
         user = ldap.getUser(uid)
         if user:
-            url = h.url(controller='utils', action='login',
-                        portal_status_message='Votre inscription est maintenant confirmée')
+            url = h.url('login', portal_status_message='Votre inscription est maintenant confirmée')
             if str(user.street) == str(key):
                 user.street=' '
                 user.st='FR'
                 user.save()
+                redirect_to(url)
+            elif str(user.st) != 'UNCONFIRMED':
+                url = h.url('login', portal_status_message='Votre inscription est déjà confirmée')
                 redirect_to(url)
         return 'You lose'
 
