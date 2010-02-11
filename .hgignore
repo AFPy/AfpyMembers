@@ -11,6 +11,7 @@ afpy.mail
 afpy.core
 afpy.ldap
 afpy.wsgi
+dumped_versions.cfg
 .svn
 .installed.cfg
 *.egg-info
