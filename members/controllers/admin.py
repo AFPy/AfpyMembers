@@ -27,12 +27,12 @@ class AdminController(BaseController):
             if stype == v:
                 break
         if v == 'search':
-            form = h.form_remote_tag(
+            form = h.form(
                    url=h.url(controller='admin', action='subscribers',
                                  stype='search', letter='all'),
-                   update=dict(success='contents', failure='contents'))
-            contents = form + h.text_field('letter') + \
-                       h.submit('Rechercher') + h.end_form()
+                   class_='remote', onsubmit="return remote_form(this);", alt='contents')
+            contents = form + h.text('letter') + \
+                       h.submit('search', 'Rechercher') + h.end_form()
         else:
             menus = [(l.upper(), h.url(controller='admin', action='subscribers',
                                        stype=stype,letter=l)) \
@@ -123,20 +123,20 @@ class AdminController(BaseController):
                 message = 'Utilisateur ajout&eacute; et son mot de passe envoy&eacute; par courriel'
 
         c.title = 'Inscription de membre'
-        html = h.form(h.url_for(id=None), id="new_user")
-        html += fs.render(message=message)
+        html = h.form(h.url.current(id=None), id="new_user")
+        html += h.literal(fs.render(message=message))
         if fs2.readonly:
-            html += '<table width="100%" class="payments_listing listing">'
-            html += fs2.header()
-            html += fs2.render()
-            html += '</table>'
+            html += h.literal('<table width="100%" class="payments_listing listing">')
+            html += h.literal(fs2.header())
+            html += h.literal(fs2.render())
+            html += h.literal('</table>')
         else:
-            html += '<table width="100%" class="payments_listing listing">'
-            html += fs2.header()
-            html += '</table>'
-            html += fs2.render()
+            html += h.literal('<table width="100%" class="payments_listing listing">')
+            html += h.literal(fs2.header())
+            html += h.literal('</table>')
+            html += h.literal(fs2.render())
         html += h.end_form()
-        c.body = html
+        c.body = h.literal(html)
         return str(render('/generic.mako'))
 
 AdminController = ControllerProtector(predicates.in_group('bureau'))(AdminController)

@@ -18,17 +18,17 @@ class RegisterController(BaseController):
         element = 'register_form'
         if not fs:
             fs = RegisterForm.bind(ldap.AfpyUser())
-        form = fs.render()
-        form += h.submit('Valider', name='validate', **{'class':'context'})
-        return '\n'.join([
-                    '<div>',
-                    h.form_remote_tag(
-                        url=h.url_for(action='register',id=None),
-                        update=dict(success=element, failure=element)
+        form = h.literal(fs.render())
+        form += h.submit('validate', 'Valider', **{'class':'context'})
+        return h.literal('\n').join([
+                    h.literal('<div>'),
+                    h.form(
+                        url=h.url.current(action='register',id=None),
+                        class_="remote", alt=element, onsubmit="return remote_form(this);"
                         ),
                     form,
                     h.end_form(),
-                    '</div>'])
+                    h.literal('</div>')])
 
     def register(self):
         conn = ldap.get_conn()
@@ -52,7 +52,7 @@ class RegisterController(BaseController):
             if not h.DEV_MOD:
                 manage_ZopeUser('add', user.uid, passwd)
 
-            confirm_url = 'http://www.afpy.org' + h.url_for(
+            confirm_url = 'http://www.afpy.org' + h.url.current(
                                     action='confirm',
                                     uid=user.uid,
                                     key=key)

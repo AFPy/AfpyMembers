@@ -65,7 +65,7 @@ NewUserForm.configure(include=[NewUserForm.uid.validate(validate_uid),
                           NewUserForm.street, NewUserForm.postalCode, NewUserForm.l, NewUserForm.st.with_renderer(CountriesRenderer)])
 
 RegisterForm = FieldSet(ldap.AfpyUser)
-RegisterForm.add(Field('password'))
+RegisterForm.append(Field('password'))
 RegisterForm.configure(include=[RegisterForm.uid.validate(validate_uid),
                                 RegisterForm.sn, RegisterForm.mail.validate(validate_email),
                                 RegisterForm.password.label('Mot de passe').with_renderer(

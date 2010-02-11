@@ -17,15 +17,16 @@ ${c.new.header()|n}
 
 %for form in c.forms:
 <div id="${form.model.get('paymentDate')}">
-${h.form_remote_tag(url=url(controller='payments', action='edit', id=c.user.uid),
-                     update=dict(success=element, failure=element))|n}
+${h.form(url=url(controller='payments', action='edit', id=c.user.uid),
+                 class_='remote', alt='element')|n}
 ${form.render(user=c.user, h=h)|n}
 ${h.end_form()|n}
 </div>
 %endfor
 
-${h.form_remote_tag(url=url(controller='payments', action='add', id=c.user.uid),
-                     update=dict(success=element, failure=element))|n}
+${h.form(url=url('add_payment', id=c.user.uid),
+                 onsubmit="return remote_form(this);",
+                 class_='remote', alt=element)|n}
 ${c.new.render(user=c.user, h=h)|n}
 ${h.end_form()|n}
 

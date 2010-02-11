@@ -48,7 +48,7 @@ src="http://zope.afpy.org/afpy_print.png" style="width: 627px; height: 62px; bor
       <p>
       Je joins à ce courrier un chèque de <strong>20 euros</strong> libellé à
       l'ordre de l'<strong>AFPY</strong>, ce paiement est effectué au titre
-      de la cotisation <strong>2009</strong></p>
+      de la cotisation <strong>2010</strong></p>
       <p class="signature">
            Date :
            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

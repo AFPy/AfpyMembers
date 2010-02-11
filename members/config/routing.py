@@ -19,15 +19,27 @@ def make_map():
     map.connect('/error/{action}/{id}', controller='error')
 
     # CUSTOM ROUTES HERE
-    map.connect('/', controller='my', action='index')
-    map.connect('/login', controller='utils', action='login')
-    map.connect('/register/confirm/{uid}/{key}', controller='register', action='confirm')
+    map.connect('home', '/', controller='my', action='index')
+    map.connect('login', '/login', controller='utils', action='login')
+    map.connect('confirm', '/register/confirm/{uid}/{key}', controller='register', action='confirm')
 
     # alias for communication
-    map.connect('/carte', controller='maps', action='index')
-    map.connect('/courrier', controller='my', action='courrier')
-    map.connect('/adhesion', controller='my',
+    map.connect('carte', '/carte', controller='maps', action='index')
+    map.connect('courrier', '/courrier', controller='my', action='courrier')
+    map.connect('adhesion', '/adhesion', controller='my',
                             action='subscribe_form')
+
+    map.connect('payments', '/users/{id}/payments',
+                controller='payments', action='index')
+    map.connect('add_payment', '/users/{id}/payments/add',
+                controller='payments', action='add')
+    map.connect('edit_payment', '/users/{id}/payments/edit',
+                controller='payments', action='edit')
+    map.connect('edit_payment', '/users/{id}/payments/{paymentDate}/edit',
+                controller='payments', action='edit')
+    map.connect('delete_payment', '/users/{id}/payments/{paymentDate}/delete',
+                controller='payments', action='delete')
+
     # ajax stuff
     map.connect('/admin/subscribers/{stype}/{letter}', controller='admin', action='subscribers')
     map.connect('/my/save_payment/{act}/{uid}/{paymentDate}', controller='my',

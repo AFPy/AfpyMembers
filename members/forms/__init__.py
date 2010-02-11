@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-from mako.template import Template
 from formalchemy import SimpleMultiDict
 from formalchemy import validators
 from formalchemy import ValidationError
 from formalchemy import types
-from formalchemy import config
+from formalchemy import templates
+from formalchemy import config as fa_config
+from webhelpers.html import literal
 from afpy.ldap import custom as ldap
 from afpy.ldap.forms import FieldSet as BaseFieldSet, Grid as BaseGrid, Field
+from members.lib.base import render
 from datetime import timedelta
 from datetime import datetime
 from datetime import date
@@ -15,67 +17,22 @@ import string
 class TestRequest(object):
     POST = None
 
-template_render = r"""
-<%
-_ = F_
-_focus_rendered = False
-%>\
+fa_config.encoding = 'utf-8'
 
-% for error in fieldset.errors.get(None, []):
-<div class="portalMessage">
-  ${_(error)}
-</div>
-% endfor
+class TemplateEngine(templates.TemplateEngine):
+    prefix = 'fieldset'
+    def render(self, name, **kwargs):
+        if 'readonly' in name:
+            name = '%s_readonly' % self.prefix
+        else:
+            name = self.prefix
+        return literal(render('/forms/%s.mako' % name, extra_vars=kwargs))
+fa_config.engine = TemplateEngine()
 
-% for field in fieldset.render_fields.itervalues():
-  % if field.requires_label:
-<div class="field">
-  <label for="${field.renderer.name}">${field.label_text or fieldset.prettify(field.key)}</label>
-  %if field.is_required():
-      <span class="field_req">*</span>
-  %endif
-  <div></div>
-  ${field.render()}
-  <div class="formHelp">
-  % for error in field.errors:
-  <span class="field_error">${_(error)}</span>
-  % endfor
-  </div>
-</div>
-
-% if (fieldset.focus == field or fieldset.focus is True) and not _focus_rendered:
-<script type="text/javascript">
-//<![CDATA[
-document.getElementById("${field.renderer.name}").focus();
-//]]>
-</script>
-<% _focus_rendered = True %>\
-% endif
-  % else:
-${field.render()}
-  % endif
-% endfor
-""".strip()
-
-template_render_readonly = r"""
-%if message:
-    <div class="portalMessage">
-    ${message}
-    </div>
-%endif
-% for field in fieldset.render_fields.itervalues():
-<div class="field">
-  <label>${field.label_text or fieldset.prettify(field.key)}</label>
-  : ${field.render_readonly()}
-<div>
-%endfor
-"""
 class FieldSet(BaseFieldSet):
+    engine = TemplateEngine()
 
-    _render = staticmethod(Template(template_render).render_unicode)
-    _render_readonly = staticmethod(Template(template_render_readonly).render_unicode)
-
-def validate_uid(value):
+def validate_uid(value, field):
     try:
         value = str(value)
     except UnicodeEncodeError:
@@ -95,7 +52,7 @@ def validate_uid(value):
         raise validators.ValidationError('Cet identifiant est pris')
     return value
 
-def validate_email(value):
+def validate_email(value, field):
     validators.email(value)
     conn = ldap.get_conn()
     if conn.search(filter='(mail=%s)' % value):

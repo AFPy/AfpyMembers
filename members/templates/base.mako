@@ -3,8 +3,7 @@
   <head>
     <title>Espace membre</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-    ${h.javascript_include_tag('/javascripts/prototype.js')|n}
-    ${h.javascript_include_tag('/javascripts/jquery-1.3.2.min.js')|n}
+    ${h.javascript_link('/javascripts/prototype.js', '/javascripts/jquery-1.3.2.min.js', '/javascripts/afpy.js')|n}
     <script type="text/javascript">
       jQuery.noConflict();
     </script>

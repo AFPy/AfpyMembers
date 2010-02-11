@@ -3,14 +3,14 @@ import logging
 
 from members.lib.base import *
 from members.lib.afpy_helpers import manage_ZopeUser, display_errors, ldap_field
-from webhelpers.rails.tags import content_tag
+from webhelpers.html.tags import HTML
 from afpy.ldap import custom as ldap
 from afpy.mail import LDAPMailTemplate
 import md5, random, string
 
 log = logging.getLogger(__name__)
 
-tag = content_tag
+tag = HTML.tag
 
 
 class PasswordController(BaseController):
@@ -21,20 +21,20 @@ class PasswordController(BaseController):
     def password_form(self,uid='',mail='',errors=''):
         element = 'password_form'
         errors = display_errors(errors)
-        description = h.content_tag('p', u"""Saisissez votre login ou votre
+        description = tag('p', u"""Saisissez votre login ou votre
                                          courriel puis validez pour réinitialiser
                                          votre mot de passe""",
                                          **{'class':'documentDescription'})
         form = ''
         for name, value, label in (('uid',uid, 'login'),('mail',mail, 'e-mail')):
             form += ldap_field(name, value, label=label)
-        form += h.content_tag('td',
-                h.submit('Valider', name='validate', **{'class':'context'}),
+        form += tag('td',
+                h.submit('validate', 'Valider', **{'class':'context'}),
                 colspan="2", align='center')
         form = tag('table', form)
-        return h.form_remote_tag(
-                    url=h.url_for(action='change_password', id=None),
-                    update=dict(success=element, failure=element)
+        return h.form(
+                    url=h.url.current(action='change_password', id=None),
+                    class_='remote', onsubmit='return remote_form(this);', alt=element
                     ) + errors + description + form + h.end_form()
 
     def change_password(self):

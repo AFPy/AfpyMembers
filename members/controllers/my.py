@@ -9,7 +9,7 @@ from repoze.what.plugins.pylonshq import ControllerProtector
 from members.lib.base import *
 from members.forms.users import UserForm, AdminUserForm
 from members.forms import ValidationError
-from webhelpers.rails.tags import content_tag
+from webhelpers.html.tags import *
 from afpy.core import mailman
 from afpy.mail import LDAPMailTemplate
 from afpy.ldap import custom as ldap
@@ -17,7 +17,8 @@ import string, datetime
 
 log = logging.getLogger(__name__)
 
-tag = content_tag
+def tag(name, *args, **kwargs):
+    return h.HTML.tag(name, *args, **kwargs)
 
 def form_message(message):
     return u'%s - %s' % (message, datetime.datetime.now().strftime('%H:%M:%S'))
@@ -56,7 +57,7 @@ class MyController(BaseController):
                  ('Mon mot de passe', h.url(controller='my', action='password_form')))
 
         if self.user.expired:
-            menus = ((u"<span style='color:red'>Adhérer à l'afpy</span>",
+            menus = ((h.literal(u"<span style='color:red'>Adhérer à l'afpy</span>"),
                       h.url(controller='my', action='subscribe_form',
                                 no_remote='true')),) + menus
         html = h.get_menu(menus, empty='letters')
@@ -80,17 +81,17 @@ class MyController(BaseController):
             html += h.get_menu(menus)
 
         # plone presentation...
-        html = html.replace('dl>','div>')
+        html = str(html).replace('dl>','div>')
         html = html.replace('<dd>','<div class="nav1">')
         html = html.replace('</dd>','</div>')
-        return """
+        return h.literal("""
         <div class="portlet">
             <h5>Espace de %s</h5>
             <div class="portletBody">
             %s
             </div>
         </div><div>&nbsp;</div>
-        """ % (user, html)
+        """) % (user, h.literal(html))
 
     def info(self, id=None):
         """ user form """
@@ -125,13 +126,10 @@ class MyController(BaseController):
         else:
             element = 'contents'
             url = h.url(controller='my', action='info')
-        form = h.form_remote_tag(url=url,
-                                 update=dict(success=element, failure=element))
-
-        html = title + tag('fieldset', tag('legend', u'Mes informations') + \
-                form + tag('table', html) + \
-                h.submit("Sauver", name='save',
-                         **{'class':'context'}) + '</form>')
+        form = h.form(url=url, class_="remote", onsubmit="return remote_form(this);", alt=element)
+        html = title + tag('fieldset', h.literal(tag('legend', u'Mes informations')) + \
+                h.literal(form) + h.literal(tag('table', h.literal(html))) + \
+                h.submit("save", "Sauver", class_='context') + h.literal('</form>'))
         return html
 
     def listes(self, id='', errors=''):
@@ -148,10 +146,10 @@ class MyController(BaseController):
         else:
             element = 'contents'
             hidden = ''
-        html += content_tag('legend', 'Listes de diffusion')
+        html += tag('legend', 'Listes de diffusion')
         html += display_errors(errors)
-        html += h.form_remote_tag(url=h.url_for(action='save_listes',id=None),
-                                 update=dict(success=element, failure=element))
+        html += h.form(url=h.url.current(action='save_listes',id=None),
+                       class_='remote', onsubmit="return remote_form(this);", alt=element)
         html += hidden
 
         email = user.email
@@ -166,18 +164,18 @@ class MyController(BaseController):
                                 checked=ml.name in selected,
                                 value=ml.name)
             html += ' '
-            html += content_tag('label', ml.title, **{'for':ml.name})
+            html += tag('label', ml.title, **{'for':ml.name})
             html += ' ('
             html += h.link_to('infos',
                          'http://lists.afpy.org/mailman/listinfo/%s' % ml.name)
             html += ')'
             html += '</div>'
 
-        html += content_tag('div', '&nbsp;')
-        html += h.submit('Sauver', **{'class':'context'})
+        html += tag('div', '&nbsp;')
+        html += h.submit('save', 'Sauver', **{'class':'context'})
         html += h.end_form()
 
-        return content_tag('fieldset', html)
+        return tag('fieldset', html)
 
     def save_listes(self):
         """ save mailing lists
@@ -226,20 +224,19 @@ class MyController(BaseController):
         field = lambda l, f:tag('div',
                 tag('label', l)+tag('div','')+f, **{'class':'field'})
 
-        paymentObject = h.options_for_select((
-                         ('Membre classique', ldap.PERSONNAL_MEMBERSHIP),
-                         (u'Tarif étudiant', ldap.STUDENT_MEMBERSHIP),
-                            ))
-        html = field('Type', h.select('paymentObject', paymentObject))
+        paymentObject = (
+                         (ldap.PERSONNAL_MEMBERSHIP, 'Membre classique'),
+                         (ldap.STUDENT_MEMBERSHIP, u'Tarif étudiant'),
+                        )
+        html = field('Type', h.select('paymentObject', [ldap.PERSONNAL_MEMBERSHIP], paymentObject))
         html += field('Mode de paiement',
-                h.select('paymentMode',
-                    h.options_for_select(
-                                ((u'Chèque','cheque'),
-                                 ('Paypal', 'paypal'),
-                                 (u'Pre-payé', 'payed')), 'cheque')))
-        html += field(u'Pr&eacute;cision (si d&eacute;j&agrave; pay&eacute;)',
-                h.text_field('paymentComment', size='50'))
-        html += h.submit(u'Adh&eacute;rer', **{'class':'context'})
+                h.select('paymentMode', ['cheque'],
+                                (('cheque', u'Chèque'),
+                                 ('paypal', 'Paypal'),
+                                 ('payed', u'Pre-payé'))))
+        html += field(h.literal(u'Pr&eacute;cision (si d&eacute;j&agrave; pay&eacute;)'),
+                h.text('paymentComment', size='50'))
+        html += h.submit('save', h.literal(u'Adh&eacute;rer'), **{'class':'context'})
         c.form = html
 
         # error message handling
@@ -324,9 +321,9 @@ class MyController(BaseController):
             value = ''
             form += ldap_field(name, value, label=label)
         form = tag('table', form)
-        form += h.submit('Valider', name='validate', **{'class':'context'})
+        form += h.submit('validate', 'Valider', class_='context')
         return tag('h1', 'Changer mon mot de passe') + \
-               h.form_remote_tag(url=h.url_for(action='change_password'),
+               h.form(url=h.url.current(action='change_password'),
                    update=dict(success=element, failure=element)) + \
                errors + form + h.end_form()
 

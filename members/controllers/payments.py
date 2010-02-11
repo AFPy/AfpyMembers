@@ -30,21 +30,21 @@ class PaymentsController(BaseController):
         return render('/payments.mako')
 
     @ActionProtector(predicates.in_group('bureau'))
-    def edit(self, id, message=None):
+    def edit(self, id, paymentDate=None, message=None):
         id = str(id)
         c.user = ldap.getUser(id)
-        dn = request.POST.get('dn')
 
         # forms
         payments = c.user.payments
         c.forms = []
         for payment in payments:
-            if request.POST and payment._dn == dn:
-                fs = PaymentForm.bind(payment, data=request.POST or None)
-                if fs.validate():
-                    fs.sync()
-                    payment.save()
-                    ldap.updateExpirationDate(user)
+            if request.POST and paymentDate:
+                if paymentDate in payment._dn:
+                    fs = PaymentForm.bind(payment, data=request.POST or None)
+                    if fs.validate():
+                        fs.sync()
+                        payment.save()
+                        ldap.updateExpirationDate(user)
             fs = PaymentForm.bind(payment)
             c.forms.append(fs)
 
@@ -65,11 +65,10 @@ class PaymentsController(BaseController):
         return render('/edit_payments.mako')
 
     @ActionProtector(predicates.in_group('bureau'))
-    def delete(self, id):
+    def delete(self, id, paymentDate):
         user = ldap.getUser(id)
-        dn = request.POST['dn']
         for p in user.payments:
-            if p._dn == dn:
+            if paymentDate in p._dn:
                 user._conn.delete(p)
                 ldap.updateExpirationDate(user)
                 break

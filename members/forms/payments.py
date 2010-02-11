@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from members.forms import *
+from mako.template import Template
 from formalchemy.fields import SelectFieldRenderer, IntegerFieldRenderer
 from members.forms import FieldSet as BaseFieldSet
+from members.forms import TemplateEngine as BaseTemplateEngine
 __doc__ = '''
 >>> from afpy.ldap import custom as ldap
 >>> payments = ldap.getUser('gawel').payments
@@ -48,59 +50,12 @@ ${field.label_text}
 </tr>
 """.strip()
 
-template_render = r"""
-<table width="100%" class="payments_listing listing">
-<tr>
-% for field in fieldset.render_fields.itervalues():
-<td ${'paymentAmount' not in field.name and 'width="150"' or ''}
-    align="center">
-    %if field.is_readonly():
-        ${field.render_readonly()}
-        <div style="display:none">
-        ${field.render()}
-        </div>
-    %else:
-        ${field.render()}
-    %endif
-</td>
-% endfor
-<td>
-%if fieldset.model._pk:
-<div>
-<input type="hidden" name="dn" value="${fieldset.model._dn}" />
-${h.link_to_function('Sauver', h.remote_function(
-        url=h.url_for(action='edit'),
-        submit=fieldset.model._pk,
-        update='payments_%s' % user.uid))}
-</div>
-<div>
-${h.link_to_function('Supprimer', h.remote_function(
-        url=h.url_for(action='delete'),
-        submit=fieldset.model._pk,
-        update='payments_%s' % user.uid))}
-<div>
-%else:
-<input type="submit" class="context" value="Ajouter" />
-%endif
-</td>
-</tr>
-</table>
-""".strip()
-
-template_render_readonly = r"""
-<tr>
-% for field in fieldset.render_fields.itervalues():
-%if 'uid' not in field.name:
-<td width="20%">${field.render_readonly()}</td>
-%endif
-% endfor
-</tr>
-""".strip()
+class TemplateEngine(BaseTemplateEngine):
+    prefix = 'payment'
 
 class FieldSet(BaseFieldSet):
     _render_header = staticmethod(Template(template_header).render_unicode)
-    _render = staticmethod(Template(template_render).render)
-    _render_readonly = staticmethod(Template(template_render_readonly).render_unicode)
+    engine = TemplateEngine()
 
     def header(self):
         return self._render_header(fieldset=self)

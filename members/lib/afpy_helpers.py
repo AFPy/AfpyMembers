@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os, sys, logging, xmlrpclib
 from members.lib.base import h
-from webhelpers.rails.tags import content_tag
+from webhelpers.html.tags import *
 from afpy.ldap import custom as ldap
 from afpy.core import config
 from afpy.core.countries import COUNTRIES
@@ -9,9 +9,10 @@ from base64 import encodestring, decodestring
 from urllib import quote, unquote
 import socket
 
-tag = content_tag
-
 COUNTRIES_OPTIONS = [(v.decode('utf-8'),k) for k,v in COUNTRIES.items()]
+
+def tag(name, *args, **kwargs):
+    return h.HTML.tag(name, *args, **kwargs)
 
 def manage_ZopeUser(action, name, passwd='', manager=0):
     """ @action: add | edit | delete
@@ -38,12 +39,11 @@ def ldap_field(name, value, allowed=True, label=None):
     field = tag('td', tag('label',label, **{'for':name}))
     if allowed == True:
         if 'passwd' in name:
-            field += tag('td', h.password_field(name, value=value))
+            field += tag('td', h.password(name, value=value))
         elif name == 'st':
-            field += tag('td', h.select(name,
-                        h.options_for_select(COUNTRIES_OPTIONS, value)))
+            field += tag('td', h.select(name, [value], COUNTRIES_OPTIONS))
         else:
-            field += tag('td', h.text_field(name, value=value))
+            field += tag('td', h.text(name, value=value))
     else:
         field += tag('td', value)
     return tag('tr',field)

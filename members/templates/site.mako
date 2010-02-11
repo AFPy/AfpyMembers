@@ -2,7 +2,7 @@
 <%inherit file="/base.mako" />
 <script language="javascript">
 var loadContents = function() {
-    var url = "${h.url_for(controller='my',action=None)|n}";
+    var url = "${h.url('home')|n}";
     url = url.split('/my')[0];
     var user = "${c.user_id}";
     var parts = window.location.href.split('#');
@@ -24,8 +24,6 @@ var loadContents = function() {
             action = 'info';
             break;
     }
-    new Ajax.Updater('contents', 
-                     url+'/'+controller+'/'+action+'/'+user, 
-                     {asynchronous:true, evalScripts:true});
+    jQuery('#contents').load(url+'/'+controller+'/'+action+'/'+user); 
 }
 </script>
