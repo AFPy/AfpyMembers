@@ -13,7 +13,7 @@ ${c.errors|n}
 %if c.need_infos:
     <p>
     Avant d'adhérer, je remplis mes
-    ${h.link_to('informations', h.url.current(action="index", id=c.user))|n}
+    ${h.link_to('informations', h.url('home')+'#infos')|n}
     </p>
 %else:
 

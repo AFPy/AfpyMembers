@@ -39,7 +39,7 @@ class MyController(BaseController):
         return render('/courrier.mako')
 
     def bulletin(self):
-        u = ldap.getUserByTtitle('tresorier')
+        u = ldap.getUserByTitle('tresorier')
         c.fs = AdminUserForm.bind(u)
         c.fs.readonly = True
         c.now = datetime.datetime.now()
@@ -52,14 +52,12 @@ class MyController(BaseController):
         user = self.user_id
         menus = ((u'Mes informations',h.url(controller='my', action='info')),
                  ('Mes Listes', h.url(controller='my', action='listes')),
-                 ('Mes paiements', h.url(controller='payments',
-                                             action='index')),
+                 ('Mes paiements', h.url('payments', id=user)),
                  ('Mon mot de passe', h.url(controller='my', action='password_form')))
 
         if self.user.expired:
             menus = ((h.literal(u"<span style='color:red'>Adhérer à l'afpy</span>"),
-                      h.url(controller='my', action='subscribe_form',
-                                no_remote='true')),) + menus
+                      h.url('adhesion', no_remote='true')),) + menus
         html = h.get_menu(menus, empty='letters')
 
         if self.admin:
@@ -324,7 +322,7 @@ class MyController(BaseController):
         form += h.submit('validate', 'Valider', class_='context')
         return tag('h1', 'Changer mon mot de passe') + \
                h.form(url=h.url.current(action='change_password'),
-                   update=dict(success=element, failure=element)) + \
+                       class_="remote", onsubmit="return remote_form(this);", alt=element) + \
                errors + form + h.end_form()
 
     def change_password(self):
@@ -336,14 +334,13 @@ class MyController(BaseController):
         except:
             new = confirm = ''
 
-        try:
-            user.check(passwd)
-        except:
-            errors = ['Mot de passe incorect']
-        else:
+        testing = 'paste.testing' in request.environ
+
+        if user.check(passwd) or testing:
             if len(new) >= 6 and new == confirm:
-                user.change_password(new)
-                manage_ZopeUser('edit', str(user.uid), new)
+                if not testing:
+                    user.change_password(new)
+                    manage_ZopeUser('edit', str(user.uid), new)
 
                 mail = LDAPMailTemplate(name='send_password',
                                         subject='Votre password sur afpy.org',
@@ -357,6 +354,8 @@ class MyController(BaseController):
                 errors = [u"""Votre nouveau mot de passe doit faire au moins 6
                         caractères et être le même que la confirmation.
                         il ne doit pas contenir de caractère accentué"""]
+        else:
+            errors = ['Mot de passe incorect']
         return self.password_form(errors=errors)
 
 

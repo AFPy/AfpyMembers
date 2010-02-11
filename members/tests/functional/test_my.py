@@ -60,6 +60,22 @@ class TestMyController(TestController):
         u = ldap.getUser('gawel')
         assert 'paypal' in u.payments[0].invoiceReference
 
+    def test_change_password(self):
+        resp = self.app.post(url(controller='my', action='change_password'),
+                             dict(passwd='old_password',
+                                  new_passwd='new_passwd',
+                                  confirm_passwd='new_passwd',
+                                  ),
+                              extra_environ=admin_environ)
+
+        resp.mustcontain('http://www.afpy.org/?portal_status_message=Mot')
+
+        mail = self.mail_output()
+        mail.mustcontain("Nom d'utilisateur: gawel",
+                         "Mot de passe: new_passwd")
+
+
+
     def tearDown(self):
         TestController.tearDown(self)
         u = ldap.getUser('gawel')

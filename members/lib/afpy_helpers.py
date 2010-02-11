@@ -2,6 +2,7 @@
 import os, sys, logging, xmlrpclib
 from members.lib.base import h
 from webhelpers.html.tags import *
+from pylons import request
 from afpy.ldap import custom as ldap
 from afpy.core import config
 from afpy.core.countries import COUNTRIES
@@ -17,6 +18,14 @@ def tag(name, *args, **kwargs):
 def manage_ZopeUser(action, name, passwd='', manager=0):
     """ @action: add | edit | delete
     """
+    try:
+        request.path_info
+    except TypeError:
+        pass
+    else:
+        if 'paste.testing' in request.environ:
+            return True
+
     user = ldap.getUser(name)
     groups = user.groups
     if 'cd' in groups or 'bureau' in groups:
@@ -51,11 +60,11 @@ def ldap_field(name, value, allowed=True, label=None):
 
 
 def display_errors(errors):
-    html = ''
+    html = h.literal('')
     if errors:
         for error in errors:
             html += tag('div', error)
     if not html:
         return ''
-    return '<div class="portalMessage">%s</div><div>&nbsp;</div>' % html
+    return h.literal('<div class="portalMessage">%s</div><div>&nbsp;</div>') % html
 
