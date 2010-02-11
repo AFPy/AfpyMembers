@@ -156,20 +156,20 @@ class MyController(BaseController):
             # hide private list if not subbcribed
             if not admin and not ml.public and ml.name not in selected:
                 continue
-            html += '<div>'
-            html += h.check_box('selected',
+            html += h.literal('<div>')
+            html += h.checkbox('selected',
                                 id=ml.name,
                                 checked=ml.name in selected,
                                 value=ml.name)
-            html += ' '
+            html += h.literal(' ')
             html += tag('label', ml.title, **{'for':ml.name})
-            html += ' ('
+            html += h.literal(' (')
             html += h.link_to('infos',
                          'http://lists.afpy.org/mailman/listinfo/%s' % ml.name)
-            html += ')'
-            html += '</div>'
+            html += h.literal(')')
+            html += h.literal('</div>')
 
-        html += tag('div', '&nbsp;')
+        html += tag('div', h.literal('&nbsp;'))
         html += h.submit('save', 'Sauver', **{'class':'context'})
         html += h.end_form()
 
