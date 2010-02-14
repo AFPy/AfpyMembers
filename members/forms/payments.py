@@ -16,7 +16,7 @@ datetime.date(2005, 1, 1)
 >>> form.paymentAmount.value
 20
 >>> print form.paymentAmount.render()
-<input id="Payment-20050101000000Z-paymentAmount" name="Payment-20050101000000Z-paymentAmount" size="5" type="text" value="20" />
+<input id="Payment-20050101000000z-paymentAmount" name="Payment-20050101000000z-paymentAmount" size="5" type="text" value="20" />
 
 >>> form = NewPaymentForm.bind(ldap.Payment())
 >>> print form.paymentDate.render() #doctest: +ELLIPSIS
