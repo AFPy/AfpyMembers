@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 <html>
 <head>
-    ${h.javascript_include_tag('/jquery.js')|n}
+    <title>Carte des membres</title>
+    ${h.javascript_link(request.script_name+'/javascripts/jquery-1.3.2.min.js')|n}
     <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=${c.api_key|n}"
             type="text/javascript"></script>
-    ${h.javascript_include_tag('/maps.js')|n}
+    ${h.javascript_link(request.script_name+'/maps.js')|n}
 </head>
 <body onload="loadMap" onunload="GUnload()">
 <h1>Cartes des membres</h1>
