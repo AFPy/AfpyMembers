@@ -14,8 +14,8 @@
     l'association
 </p>
 <div style="display:none">
-    ${h.link_to('', h.url_for(action='datas'), id='data_url')|n}
-    ${h.link_to('', h.url_for(action='api')+'&q=', id='geo_url')|n}
+    ${h.link_to('', h.url.current(action='datas'), id='data_url')|n}
+    ${h.link_to('', h.url.current(action='api')+'&q=', id='geo_url')|n}
 </div>
 <div id="map" style="width: 100%; height: 500px"></div>
 <div id="debug"></div>

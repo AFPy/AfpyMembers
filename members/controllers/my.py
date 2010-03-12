@@ -104,14 +104,17 @@ class MyController(BaseController):
 
         html = title = ''
         if admin:
-            fs = AdminUserForm.bind(user, data=request.POST or None)
+            fs_klass = AdminUserForm
+            fs = AdminUserForm
         else:
-            fs = UserForm.bind(user, data=request.POST or None)
+            fs_klass = UserForm
+
+        fs = fs_klass.bind(user, data=request.POST or None)
 
         if request.POST and fs.validate():
             fs.sync()
             user.save()
-            fs.rebind(user)
+            fs = fs_klass.bind(user, data=None)
             message = form_message(u'Modifie').encode('utf-8')
             e = ValidationError(message)
             fs._errors = [e]

@@ -45,7 +45,7 @@ class RegisterController(BaseController):
             user.uid = user.uid.lower()
             user.st = 'UNCONFIRMED'
             user.street = key
-            user._dn = conn.uid2dn(user.uid)
+            #user._dn = conn.uid2dn(user.uid)
             conn.add(user)
             user.change_password(passwd)
 

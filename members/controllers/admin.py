@@ -86,7 +86,7 @@ class AdminController(BaseController):
                 uid = fs.uid.value
                 conn = ldap.get_conn()
 
-                user._dn = conn.uid2dn(uid)
+                #user._dn = conn.uid2dn(uid)
                 user.cn = user.uid
                 conn.add(user)
                 user.append(payment)
