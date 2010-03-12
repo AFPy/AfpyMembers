@@ -52,7 +52,7 @@ class PasswordController(BaseController):
 
         if not user and mail:
             conn = ldap.get_conn()
-            members = conn.search_nodes(node_class=ldap.AfpyUser, filter='(mail=%s)' % mail)
+            members = conn.search_nodes(node_class=ldap.User, filter='(mail=%s)' % mail)
             if len(members) == 1:
                 user = members[0]
             else:

@@ -17,7 +17,7 @@ class RegisterController(BaseController):
     def register_form(self, fs = None):
         element = 'register_form'
         if not fs:
-            fs = RegisterForm.bind(ldap.AfpyUser())
+            fs = RegisterForm.bind(ldap.User())
         form = h.literal(fs.render())
         form += h.submit('validate', 'Valider', **{'class':'context'})
         return h.literal('\n').join([
@@ -32,10 +32,10 @@ class RegisterController(BaseController):
 
     def register(self):
         conn = ldap.get_conn()
-        user = ldap.AfpyUser()
+        user = ldap.User()
         form = RegisterForm.bind(user, data=request.POST or None)
 
-        if 'AfpyUser--uid' in request.POST and form.validate():
+        if 'User--uid' in request.POST and form.validate():
             form.sync()
             passwd = str(form.password.value)
             delattr(user, 'password')
@@ -74,10 +74,10 @@ class RegisterController(BaseController):
                 user.street=' '
                 user.st='FR'
                 user.save()
-                redirect_to(url)
+                redirect(url)
             elif str(user.st) != 'UNCONFIRMED':
                 url = h.url('login', portal_status_message='Votre inscription est déjà confirmée')
-                redirect_to(url)
+                redirect(url)
         return 'You lose'
 
 

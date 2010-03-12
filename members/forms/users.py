@@ -26,7 +26,7 @@ __doc__ = '''
 >>> form.uid.value
 'gawel'
 >>> form.uid.render()
-'<input id="AfpyUser-gawel-uid" name="AfpyUser-gawel-uid" type="hidden" value="gawel" />'
+'<input id="User-gawel-uid" name="User-gawel-uid" type="hidden" value="gawel" />'
 
 '''
 
@@ -45,26 +45,26 @@ class UserInfos(object):
     st = Field().label('Pays').with_renderer(CountriesRenderer).required()
     postalCode = Field().label('Code postal').required()
 
-UserForm = FieldSet(ldap.AfpyUser)
+UserForm = FieldSet(ldap.User)
 UserForm.configure(include=[UserForm.uid.hidden(), UserForm.sn,
                       UserForm.mail.validate(validators.email),
                       UserForm.telephoneNumber, UserForm.birthDate,
                       UserForm.street, UserForm.postalCode, UserForm.l, UserForm.st.with_renderer(CountriesRenderer)])
 
-AdminUserForm = FieldSet(ldap.AfpyUser)
+AdminUserForm = FieldSet(ldap.User)
 AdminUserForm.configure(include=[AdminUserForm.uid.hidden(), AdminUserForm.sn, AdminUserForm.title.with_renderer(RoleRenderer),
                                 AdminUserForm.mail.validate(validators.email),
                           AdminUserForm.emailAlias, AdminUserForm.labeledURI,
                           AdminUserForm.telephoneNumber, AdminUserForm.birthDate,
                           AdminUserForm.street, AdminUserForm.postalCode, AdminUserForm.l, AdminUserForm.st.with_renderer(CountriesRenderer)])
 
-NewUserForm = FieldSet(ldap.AfpyUser)
+NewUserForm = FieldSet(ldap.User)
 NewUserForm.configure(include=[NewUserForm.uid.validate(validate_uid),
                           NewUserForm.sn, NewUserForm.mail.validate(validate_email),
                           NewUserForm.telephoneNumber, NewUserForm.birthDate,
                           NewUserForm.street, NewUserForm.postalCode, NewUserForm.l, NewUserForm.st.with_renderer(CountriesRenderer)])
 
-RegisterForm = FieldSet(ldap.AfpyUser)
+RegisterForm = FieldSet(ldap.User)
 RegisterForm.append(Field('password'))
 RegisterForm.configure(include=[RegisterForm.uid.validate(validate_uid),
                                 RegisterForm.sn, RegisterForm.mail.validate(validate_email),

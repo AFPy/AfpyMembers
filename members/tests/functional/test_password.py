@@ -5,7 +5,7 @@ class TestPasswordController(TestController):
 
     def setUp(self):
         TestController.setUp(self)
-        self.user = ldap.AfpyUser()
+        self.user = ldap.User()
         self.user.uid = 'afpy_test_user'
         self.user.cn = 'afpy_test_user'
         self.user.sn = 'afpy_test_user'

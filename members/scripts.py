@@ -14,7 +14,7 @@ class Users(dict):
     def __repr__(self):
         return repr(sorted(self.keys()))
 
-class User(ldap.AfpyUser):
+class User(ldap.User):
 
     def __str__(self):
         out = []
@@ -28,7 +28,7 @@ class User(ldap.AfpyUser):
             if v:
                 if isinstance(v, basestring):
                     v = v.replace('$', '\n         ')
-                title = ldap.AfpyUser.__dict__[name].title
+                title = ldap.User.__dict__[name].title
                 out.append('%-7.7s: %s' % (title, v))
         return '\n'.join([o.encode('utf-8') for o in out if o])
 

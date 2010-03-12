@@ -3,12 +3,13 @@
 Provides the BaseController class for subclassing, and other objects
 utilized by Controllers.
 """
-from pylons import c, cache, config, g, request, response
+from pylons import cache, config, request, response
 from pylons.controllers import WSGIController
-from pylons.controllers.util import abort, etag_cache, redirect_to
+from pylons.controllers.util import abort, etag_cache, redirect
 from pylons.decorators import jsonify, validate
 from pylons.i18n import _, ungettext, N_
 from pylons.templating import render_mako as render
+from pylons import tmpl_context as c
 
 import members.lib.helpers as h
 import members.model as model
@@ -24,14 +25,16 @@ class BaseController(WSGIController):
         self.user = identity.get('user')
 
         if self.user:
-            self.user_id = environ['REMOTE_USER']
+            self.user_id = c.user_id = environ['REMOTE_USER']
         else:
-            self.user_id = None
+            self.user_id = c.user_id = None
 
         if self.user and 'bureau' in self.user.groups:
             self.admin = True
         else:
             self.admin = False
+
+        c.listing_title = ''
 
         return WSGIController.__call__(self, environ, start_response)
 

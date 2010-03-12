@@ -67,7 +67,7 @@ class AdminController(BaseController):
 
     def new(self):
         message = ''
-        user = ldap.AfpyUser()
+        user = ldap.User()
         user.l = 'Paris'
         user.st = 'FR'
         fs = NewUserForm.bind(user, data=request.POST or None)

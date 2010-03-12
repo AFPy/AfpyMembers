@@ -266,7 +266,7 @@ class MyController(BaseController):
             raise RuntimeError('No paymentMode')
 
         if paymentMode == 'payed' and not paymentComment.strip():
-            return redirect_to(h.url(controller='my',
+            return redirect(h.url(controller='my',
                                      action='subscribe_form',
                                      error='payed'))
 
@@ -290,9 +290,8 @@ class MyController(BaseController):
         paymentDate = h.to_python(h.to_string(paymentDate), datetime.date)
 
         if not h.DEV_MOD and mailman.subscribeTo('afpy-membres', user) > 0:
-            return redirect_to(url(controller='my',
-                                   action='subscribe_form',
-                                   error='mailman'))
+            return redirect(h.url.current(action='subscribe_form',
+                                          error='mailman'))
 
         payment = ldap.Payment()
         payment.paymentDate = paymentDate
@@ -351,7 +350,7 @@ class MyController(BaseController):
                                         mfrom='www@afpy.org')
                 mail.send(user.uid)
                 msg = 'Mot de passe modifié. Identifiez vous'
-                return redirect_to(
+                return redirect(
                         'http://www.afpy.org/?portal_status_message=' + msg)
             else:
                 errors = [u"""Votre nouveau mot de passe doit faire au moins 6
