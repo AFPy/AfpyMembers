@@ -10,7 +10,7 @@ from pylons.wsgiapp import PylonsApp
 from routes.middleware import RoutesMiddleware
 
 from members.config.environment import load_environment
-from afpy.wsgi.who import AuthenticationMiddleware
+from afpy.ldap.authafpy import make_auth
 
 def make_app(global_conf, full_stack=True, **app_conf):
     """Create a Pylons WSGI application and return it
@@ -38,7 +38,7 @@ def make_app(global_conf, full_stack=True, **app_conf):
     app = PylonsApp()
     
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
-    app = AuthenticationMiddleware(app, config)
+    app = make_auth(app, config)
     # Routing/Session/Cache Middleware
     app = RoutesMiddleware(app, config['routes.map'])
     app = SessionMiddleware(app, config)
