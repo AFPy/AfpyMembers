@@ -291,9 +291,8 @@ class MyController(BaseController):
                 paymentDate = now
         paymentDate = h.to_python(h.to_string(paymentDate), datetime.date)
 
-        if not h.DEV_MOD and mailman.subscribeTo('afpy-membres', user) > 0:
-            return redirect(h.url.current(action='subscribe_form',
-                                          error='mailman'))
+        if not h.DEV_MOD:
+            mailman.subscribeTo('afpy-membres', user)
 
         payment = ldap.Payment()
         payment.paymentDate = paymentDate
