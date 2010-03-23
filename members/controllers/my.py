@@ -157,7 +157,9 @@ class MyController(BaseController):
         selected = mailman.lists.getListsFor(email)
         for ml in mailman.lists.values():
             # hide private list if not subbcribed
-            if not admin and not ml.public and ml.name not in selected:
+            if ml.name == 'afpy-membres' and getattr(user, 'membershipExpirationDate', None):
+                pass
+            elif not admin and not ml.public and ml.name not in selected:
                 continue
             html += h.literal('<div>')
             html += h.checkbox('selected',
