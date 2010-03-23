@@ -40,8 +40,10 @@
         ${self.body()|n}
     </div>
     <script language="javascript">
-    ${h.load_html('#wsgi_menu', controller='my',action='menu',id=c.user_id)}
-    try {loadContents();} catch (e) {};
+      jQuery(document).ready(function() {
+            ${h.load_html('#wsgi_menu', controller='my',action='menu',id=c.user_id)}
+            try {loadContents();} catch (e) {};
+      });
     </script>
     </div>
   </body>

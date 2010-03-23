@@ -23,6 +23,6 @@ var loadContents = function() {
             action = 'info';
             break;
     }
-    jQuery('#contents').load(root+'/'+controller+'/'+action+'/'+user); 
+    jQuery('#contents').load(root+'/'+controller+'/'+action); 
 }
 </script>
