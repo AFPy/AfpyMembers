@@ -11,19 +11,19 @@ class TestRegisterController(TestController):
         form['User--mail'] = 'afpy@gawel.org'
         form['User--password'] = 'toto'
         response = form.submit('validate')
-        assert 'Cet identifiant est pris' in response, response
+        response.mustcontain('Cet identifiant est pris')
 
         form['User--uid'] = 'afpy_test_user'
         form['User--mail'] = 'afpy@gawel.org'
         form['User--password'] = 'toto'
         response = form.submit('validate')
-        assert 'Cet email est pris' in response, response
+        response.mustcontain('Cet email est pris')
 
         form['User--uid'] = 'afpy_test_user'
         form['User--mail'] = 'afpy@gawel.org'
         form['User--password'] = 'toto'
         response = form.submit('validate')
-        assert 'Cet email est pris' in response, response
+        response.mustcontain('Cet email est pris')
 
         form['User--uid'] = 'Afpy_Test_User'
         form['User--sn'] = 'Afpy User'
@@ -46,4 +46,3 @@ class TestRegisterController(TestController):
         user = ldap.getUser('afpy_test_user')
         if user is not None:
             user.conn.delete(user)
-

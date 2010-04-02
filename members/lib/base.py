@@ -24,8 +24,11 @@ class BaseController(WSGIController):
         identity = environ.get('repoze.who.identity', {})
         self.user = identity.get('user')
 
+        if not self.user and request.remote_user:
+            self.user = ldap.getUser(request.remote_user)
+
         if self.user:
-            self.user_id = c.user_id = environ['REMOTE_USER']
+            self.user_id = c.user_id = request.remote_user
         else:
             self.user_id = c.user_id = None
 
