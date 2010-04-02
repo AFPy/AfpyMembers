@@ -143,7 +143,7 @@ class MyController(BaseController):
 
         if admin and self.user != user:
             element = 'listes_%s' % user
-            hidden = h.hidden_field('uid',user.uid)
+            hidden = h.hidden('uid',user.uid)
         else:
             element = 'contents'
             hidden = ''
@@ -204,7 +204,7 @@ class MyController(BaseController):
                         ml.append(email)
             elif ml.name in selected:
                 del ml[email]
-        return self.listes(id=self.user_id, errors=[form_message(u'Modification sauvegardées')])
+        return self.listes(id=user.uid, errors=[form_message(u'Modification sauvegardées')])
 
 
     def subscribe_form(self):
