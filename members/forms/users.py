@@ -25,8 +25,8 @@ __doc__ = '''
 >>> form = UserForm.bind(user)
 >>> form.uid.value
 'gawel'
->>> form.uid.render()
-'<input id="User-gawel-uid" name="User-gawel-uid" type="hidden" value="gawel" />'
+>>> print form.uid.render()
+<input id="User-gawel-uid" name="User-gawel-uid" type="hidden" value="gawel" />
 
 '''
 

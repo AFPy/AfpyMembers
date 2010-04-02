@@ -27,9 +27,6 @@ setup(
     zip_safe=False,
     paster_plugins=['PasteScript', 'Pylons'],
     entry_points="""
-    [console_scripts]
-    pyldap = members.scripts:main
-
     [paste.app_factory]
     main = members.config.middleware:make_app
 

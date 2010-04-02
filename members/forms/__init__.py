@@ -39,7 +39,7 @@ def validate_uid(value, field):
         raise validators.ValidationError(
                 "Le login ne doit contenir que de l'ASCII")
     for v in value:
-        if v not in string.ascii_letters+'-_.':
+        if v not in string.ascii_letters+'-_':
             raise validators.ValidationError(
                 "Le login ne doit contenir que de l'ASCII")
     if ' ' in value:
