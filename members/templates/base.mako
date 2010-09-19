@@ -41,7 +41,7 @@
     </div>
     <script language="javascript">
       jQuery(document).ready(function() {
-            ${h.load_html('#wsgi_menu', controller='my',action='menu',id=c.user_id)}
+            ${h.load_html('#wsgi_menu', controller='my',action='menu',id=c.user_id)|n}
             try {loadContents();} catch (e) {};
       });
     </script>

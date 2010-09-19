@@ -79,10 +79,10 @@ class MyController(BaseController):
             html += h.get_menu(menus)
 
         # plone presentation...
-        html = str(html).replace('dl>','div>')
-        html = html.replace('<dd>','<div class="nav1">')
-        html = html.replace('</dd>','</div>')
-        return h.literal("""
+        html = html.replace(u'dl>',u'div>')
+        html = html.replace(u'<dd>',u'<div class="nav1">')
+        html = html.replace(u'</dd>',u'</div>')
+        return h.literal(u"""
         <div class="portlet">
             <h5>Espace de %s</h5>
             <div class="portletBody">

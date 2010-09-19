@@ -137,7 +137,7 @@ class AdminController(BaseController):
             html += h.literal(fs2.render())
         html += h.end_form()
         c.body = h.literal(html)
-        return str(render('/generic.mako'))
+        return render('/generic.mako')
 
 AdminController = ControllerProtector(predicates.in_group('bureau'))(AdminController)
 
