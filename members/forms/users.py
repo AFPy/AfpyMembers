@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from members.forms import *
+from formalchemy import Field
 from formalchemy.fields import SelectFieldRenderer, PasswordFieldRenderer
 from afpy.core.countries import COUNTRIES
 
@@ -29,21 +30,6 @@ __doc__ = '''
 <input id="User-gawel-uid" name="User-gawel-uid" type="hidden" value="gawel" />
 
 '''
-
-class UserInfos(object):
-    uid = Field().label('Login')
-    title = Field().label('Role').readonly()
-    #cn = Field()
-    sn = Field().label('Nom').required()
-    mail = Field().validate(validators.email).label('E-mail').required()
-    emailAlias = Field().validate(validators.email).label('Alias mail')
-    labeledURI = Field().label('OpenId')
-    birthDate = Field(type=types.Date).label('Date de naissance').required()
-    telephoneNumber = Field().label('Tel.').required()
-    l = Field().label('Ville').required()
-    street = Field().label('Addresse').required()
-    st = Field().label('Pays').with_renderer(CountriesRenderer).required()
-    postalCode = Field().label('Code postal').required()
 
 UserForm = FieldSet(ldap.User)
 UserForm.configure(include=[UserForm.uid.hidden(), UserForm.sn,
