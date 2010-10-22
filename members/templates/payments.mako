@@ -15,7 +15,7 @@
   </table>
 %else:
     <p class="documentDescription">
-        Vous n'avez aucune cotisation. Il serait temps de d'agiter.
+        Vous n'avez aucune cotisation. Il serait temps de s'agiter.
     </p>
 %endif
 </fieldset>
