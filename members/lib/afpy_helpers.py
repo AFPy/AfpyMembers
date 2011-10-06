@@ -15,7 +15,7 @@ COUNTRIES_OPTIONS = [(v.decode('utf-8'),k) for k,v in COUNTRIES.items()]
 def tag(name, *args, **kwargs):
     return h.HTML.tag(name, *args, **kwargs)
 
-def manage_ZopeUser(action, name, passwd='', manager=0):
+def manage_ZopeUser(action, name, passwd='', manager=0, user=None):
     """ @action: add | edit | delete
     """
     try:
@@ -26,7 +26,11 @@ def manage_ZopeUser(action, name, passwd='', manager=0):
         if 'paste.testing' in request.environ:
             return True
 
-    user = ldap.getUser(name)
+    if not user:
+        user = ldap.getUser(name)
+    elif password:
+        user.change_password(passwd)
+
     groups = user.groups
     if 'cd' in groups or 'bureau' in groups:
         manager = 1
