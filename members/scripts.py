@@ -1,8 +1,12 @@
 # -*- coding: utf-8 -*-
 from IPython.Shell import IPShellEmbed
 import afpy.ldap.custom as ldap
+from ConfigObject import ConfigObject
 from optparse import OptionParser
+import urllib2
+import cPickle
 import sys
+import os
 
 class Users(dict):
     def update(self, users):
@@ -39,6 +43,54 @@ def search(name):
     else:
         filter = 'uid=*'
     return conn.search_nodes(node_class=User, filter=filter)
+
+
+def ldap2map():
+    """store google maps coords in a dumped dict
+    """
+    config = ConfigObject()
+    config.read(os.path.expanduser('~/.afpy.cfg'))
+    conn = ldap.get_conn()
+    api_key = config.get('api_keys', 'maps.google.com')
+    filename = '/tmp/google.maps.coords.dump'
+    users = []
+    for i in range(1, 10):
+        users.extend(conn.search_nodes(filter='(&(postalCode=%s*)(street=*))' % i,
+                        attrs=['postalCode', 'st']))
+    addresses = {}
+    for user in users:
+        try:
+            short_address = '%s, %s' % (
+                user['postalCode'].strip(),
+                user['st'].strip())
+            addresses[short_address] = ''
+        except:
+            pass
+
+    if os.path.isfile(filename):
+        coords = cPickle.load(open(filename))
+    else:
+        coords = {}
+
+    opener = urllib2.build_opener()
+
+
+    for address in addresses:
+        if address in coords:
+            continue
+        cp, country = address.split(', ')
+        url = 'http://ws.geonames.org/postalCodeLookupJSON?postalcode=%s&country=%s' % (
+                cp, country)
+        request = urllib2.Request(url)
+        request.add_header('User-Agent',
+                           'Mozilla Firefox')
+        datas = opener.open(request).read()
+        coord = eval(datas)
+        if coord and coord.get('postalcodes'):
+            codes = coord.get('postalcodes')
+            if codes:
+                coords[address] = codes[0]
+    cPickle.dump(coords, open(filename, 'w'))
 
 
 def main():

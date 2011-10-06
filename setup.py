@@ -27,6 +27,9 @@ setup(
     zip_safe=False,
     paster_plugins=['PasteScript', 'Pylons'],
     entry_points="""
+    [console_scripts]
+    update_map = members.scripts:ldap2map
+
     [paste.app_factory]
     main = members.config.middleware:make_app
 
