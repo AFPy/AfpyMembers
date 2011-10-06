@@ -5,6 +5,7 @@ from ConfigObject import ConfigObject
 from optparse import OptionParser
 import urllib2
 import cPickle
+import time
 import sys
 import os
 
@@ -57,12 +58,13 @@ def ldap2map():
     for i in range(1, 10):
         users.extend(conn.search_nodes(filter='(&(postalCode=%s*)(street=*))' % i,
                         attrs=['postalCode', 'st']))
+
     addresses = {}
     for user in users:
         try:
             short_address = '%s, %s' % (
-                user['postalCode'].strip(),
-                user['st'].strip())
+                user.postalCode.strip(),
+                user.st.strip())
             addresses[short_address] = ''
         except:
             pass
@@ -84,7 +86,12 @@ def ldap2map():
         request = urllib2.Request(url)
         request.add_header('User-Agent',
                            'Mozilla Firefox')
-        datas = opener.open(request).read()
+        datas = None
+        while not datas:
+            try:
+                datas = opener.open(request).read()
+            except:
+                time.sleep(4)
         coord = eval(datas)
         if coord and coord.get('postalcodes'):
             codes = coord.get('postalcodes')
