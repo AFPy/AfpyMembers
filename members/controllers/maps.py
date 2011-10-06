@@ -6,6 +6,7 @@ from cPickle import load
 from members.lib.base import *
 from afpy.core import config
 from afpy.core.countries import COUNTRIES
+from pylons.decorators.cache import beaker_cache
 
 log = logging.getLogger(__name__)
 
@@ -19,11 +20,14 @@ class MapsController(BaseController):
         c.api_key = api_key
         return render('/maps.mako')
 
+    @beaker_cache()
     @jsonify
     def datas(self):
         conn = ldap.get_conn()
-        users = conn.search_nodes(filter='(&(postalCode=*)(street=*))',
-                    attrs=['uid', 'street', 'postalCode', 'l', 'st'])
+        users = []
+        for i in range(1, 10):
+            users.extend(conn.search_nodes(filter='(&(postalCode=%s*)(street=*))' % i,
+                        attrs=['uid', 'street', 'postalCode', 'l', 'st']))
         datas = {}
         if os.path.isfile(filename):
             coords = load(open(filename))

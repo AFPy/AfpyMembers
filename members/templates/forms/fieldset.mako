@@ -5,7 +5,7 @@ _focus_rendered = False
 
 % for error in fieldset.errors.get(None, []):
 <div class="portalMessage">
-  ${_(error)}
+  ${_(str(error))}
 </div>
 % endfor
 
@@ -20,7 +20,7 @@ _focus_rendered = False
   ${field.render()|n}
   <div class="formHelp">
   % for error in field.errors:
-  <span class="field_error">${_(error)}</span>
+  <span class="field_error">${_(str(error))}</span>
   % endfor
   </div>
 </div>
