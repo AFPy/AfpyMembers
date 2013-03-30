@@ -13,10 +13,10 @@ class UtilsController(BaseController):
         return render('/personnal_bar.mako')
 
     def login(self):
-        came_from = request.params.get('came_from')
-        if self.user and came_from and 'memb' not in came_from:
-            return exc.HTTPFound(location=came_from)(
-                request.environ, self.start_response)
+        #came_from = request.params.get('came_from')
+        #if self.user and came_from and 'memb' not in came_from:
+        #    return exc.HTTPFound(location=came_from)(
+        #        request.environ, self.start_response)
         user = request.environ.get('repoze.who.identity', {}).get('user', None)
         if user is not None:
             return exc.HTTPFound(location=request.script_name or '/')(
