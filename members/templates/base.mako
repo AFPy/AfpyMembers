@@ -3,6 +3,7 @@
   <head>
     <title>Espace membre</title>
     <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    ${h.get_plone_skin(request, head=True)|n}
     ${h.javascript_link(request.script_name+'/javascripts/prototype.js',
 			request.script_name+'/javascripts/jquery-1.3.2.min.js',
 			request.script_name+'/javascripts/afpy.js')|n}
@@ -12,11 +13,21 @@
     </script>
   </head>
   <body>
-    <div id="wsgi_menu"></div>
-    <div id="content">
-      <div id="letters"></div>
-      <div id="contents">
-          ${self.body()|n}
+    <div id="visual-portal-wrapper">
+      <div>
+        ${h.get_plone_skin(request)|n}
+      </div>
+      <div id="portal-columns" class="row">
+          <div id="portal-column-content" class="cell width-3:4 position-1:4">
+            <div id="letters"></div>
+            <div id="contents">
+                ${self.body()|n}
+            </div>
+          </div>
+          <div id="portal-column-one">
+            <div>&nbsp;</div>
+            <div id="wsgi_menu"></div>
+          </div>
       </div>
     </div>
     <script language="javascript">

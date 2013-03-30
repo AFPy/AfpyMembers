@@ -3,25 +3,26 @@ import datetime
 import logging
 
 from repoze.what import predicates
-from repoze.what.plugins.pylonshq import ActionProtector
 from repoze.what.plugins.pylonshq import ControllerProtector
 
-from members.lib.base import *
+from members.lib.base import *  # noqa
 from members.forms.users import UserForm, AdminUserForm
 from members.forms import ValidationError
-from webhelpers.html.tags import *
+from webhelpers.html.tags import *  # noqa
 from afpy.core import mailman
 from afpy.mail import LDAPMailTemplate
 from afpy.ldap import custom as ldap
-import string, datetime
 
 log = logging.getLogger(__name__)
+
 
 def tag(name, *args, **kwargs):
     return h.HTML.tag(name, *args, **kwargs)
 
+
 def form_message(message):
     return u'%s - %s' % (message, datetime.datetime.now().strftime('%H:%M:%S'))
+
 
 class MyController(BaseController):
 
@@ -50,45 +51,44 @@ class MyController(BaseController):
     def menu(self):
         """ left menu """
         user = self.user_id
-        menus = ((u'Mes informations',h.url(controller='my', action='info')),
+        menus = ((u'Mes informations', h.url(controller='my', action='info')),
                  ('Mes Listes', h.url(controller='my', action='listes')),
                  ('Mes paiements', h.url('payments', id=user)),
-                 ('Mon mot de passe', h.url(controller='my', action='password_form')))
+                 ('Mon mot de passe',
+                  h.url(controller='my', action='password_form')))
 
         if self.user.expired:
-            menus = ((h.literal(u"<span style='color:red'>Adhérer à l'afpy</span>"),
-                      h.url('adhesion', no_remote='true')),) + menus
+            menus = ((h.literal(
+                u"<span style='color:red'>Adhérer à l'afpy</span>"),
+                h.url('adhesion', no_remote='true')),) + menus
         html = h.get_menu(menus, empty='letters')
 
         if self.admin:
             user += ' (Admin)'
-            menus = [(l, h.url(controller='admin', action='letters', id=v)) for l,v in h.MEMBER_TYPES]
+            menus = [(l, h.url(controller='admin', action='letters', id=v))
+                     for l, v in h.MEMBER_TYPES]
             html += h.get_menu(menus, element='letters', empty='contents')
 
-            menus = [(l, h.url(controller='admin', action=v)) for l,v in [('Payments en attente', 'awaiting')]]
+            menus = [(l, h.url(controller='admin', action=v))
+                     for l, v in [('Payments en attente', 'awaiting')]]
             html += h.get_menu(menus, element='contents', empty='letters')
 
             menus = (
-                     (u"Inscription manuelle",
-                      h.url(controller='admin', action='new',
-                                no_remote='true')),
-                     (u"Impression bulletin",
-                      h.url(controller='my', action='bulletin',
-                                no_remote='true', notheme='true')),
-                    )
+                (u"Inscription manuelle",
+                 h.url(controller='admin', action='new',
+                 no_remote='true')),
+                (u"Impression bulletin",
+                 h.url(controller='my', action='bulletin',
+                 no_remote='true', notheme='true')),
+            )
             html += h.get_menu(menus)
 
         # plone presentation...
-        html = html.replace(u'dl>',u'div>')
-        html = html.replace(u'<dd>',u'<div class="nav1">')
-        html = html.replace(u'</dd>',u'</div>')
         return h.literal(u"""
-        <div class="portlet">
-            <h5>Espace de %s</h5>
-            <div class="portletBody">
+        <dl class="portlet">
+            <dt>Espace de %s</dt>
             %s
-            </div>
-        </div><div>&nbsp;</div>
+        </dl><div>&nbsp;</div>
         """) % (user, h.literal(html))
 
     def info(self, id=None):
@@ -123,59 +123,66 @@ class MyController(BaseController):
 
         if admin and id:
             element = 'infos_%s' % user.uid
-            url = h.url(controller='my', action='info',id=id)
+            url = h.url(controller='my', action='info', id=id)
         else:
             element = 'contents'
             url = h.url(controller='my', action='info')
-        form = h.form(url=url, class_="remote", onsubmit="return remote_form(this);", alt=element)
-        html = title + tag('fieldset', h.literal(tag('legend', u'Mes informations')) + \
-                h.literal(form) + h.literal(tag('table', h.literal(html))) + \
-                h.submit("save", "Sauver", class_='context') + h.literal('</form>'))
+        form = h.form(url=url, class_="remote",
+                      onsubmit="return remote_form(this);", alt=element)
+        html = title + tag(
+            'fieldset',
+            h.literal(tag('legend', u'Mes informations')) +
+            h.literal(form) + h.literal(tag('table', h.literal(html))) +
+            h.submit("save", "Sauver", class_='context') +
+            h.literal('</form>'))
         return html
 
     def listes(self, id='', errors=''):
         user = id and ldap.getUser(id) or self.user
         admin = self.admin
 
-        html = title = ''
+        html = ''
         if user != self.user and not admin:
             raise NotAuthorizedError()
 
         if admin and self.user != user:
             element = 'listes_%s' % user
-            hidden = h.hidden('uid',user.uid)
+            hidden = h.hidden('uid', user.uid)
         else:
             element = 'contents'
             hidden = ''
         html += tag('legend', 'Listes de diffusion')
         html += display_errors(errors)
-        html += h.form(url=h.url.current(action='save_listes',id=None),
-                       class_='remote', onsubmit="return remote_form(this);", alt=element)
+        html += h.form(url=h.url.current(action='save_listes', id=None),
+                       class_='remote', onsubmit="return remote_form(this);",
+                       alt=element)
         html += hidden
 
         email = user.email
         selected = mailman.lists.getListsFor(email)
         for ml in mailman.lists.values():
             # hide private list if not subbcribed
-            if ml.name == 'afpy-membres' and getattr(user, 'membershipExpirationDate', None):
+            if ml.name == 'afpy-membres' and \
+                    getattr(user, 'membershipExpirationDate', None):
                 pass
             elif not admin and not ml.public and ml.name not in selected:
                 continue
             html += h.literal('<div>')
             html += h.checkbox('selected',
-                                id=ml.name,
-                                checked=ml.name in selected,
-                                value=ml.name)
+                               id=ml.name,
+                               checked=ml.name in selected,
+                               value=ml.name)
             html += h.literal(' ')
-            html += tag('label', ml.title, **{'for':ml.name})
+            html += tag('label', ml.title, **{'for': ml.name})
             html += h.literal(' (')
-            html += h.link_to('infos',
-                         'http://lists.afpy.org/mailman/listinfo/%s' % ml.name)
+            html += h.link_to(
+                'infos',
+                'http://lists.afpy.org/mailman/listinfo/%s' % ml.name)
             html += h.literal(')')
             html += h.literal('</div>')
 
         html += tag('div', h.literal('&nbsp;'))
-        html += h.submit('save', 'Sauver', **{'class':'context'})
+        html += h.submit('save', 'Sauver', **{'class': 'context'})
         html += h.end_form()
 
         return tag('fieldset', html)
@@ -204,8 +211,8 @@ class MyController(BaseController):
                         ml.append(email)
             elif ml.name in selected:
                 del ml[email]
-        return self.listes(id=user.uid, errors=[form_message(u'Modification sauvegardées')])
-
+        return self.listes(id=user.uid,
+                           errors=[form_message(u'Modification sauvegardées')])
 
     def subscribe_form(self):
         c.uid = self.user_id
@@ -218,28 +225,35 @@ class MyController(BaseController):
                 c.need_infos = True
                 return render('/subscribe_form.mako')
 
-        c.memberships = u''.join([u"<li>%s - %i &euro;/an</li>" % (l, p) for l,p in (
-                 ('Membre classique', 20),
-                 (u'Tarif étudiant', 10),
-                 #(ldap.CORPORATE_MEMBERSHIP, u'Tarif entreprise', 100),
-                 )])
+        c.memberships = u''.join([
+            u"<li>%s - %i &euro;/an</li>" % (l, p) for l, p in (
+            ('Membre classique', 20),
+            (u'Tarif étudiant', 10),
+            #(ldap.CORPORATE_MEMBERSHIP, u'Tarif entreprise', 100),
+            )])
 
-        field = lambda l, f:tag('div',
-                tag('label', l)+tag('div','')+f, **{'class':'field'})
+        field = lambda l, f: tag(
+            'div',
+            tag('label', l) + tag('div', '') + f, **{'class': 'field'})
 
         paymentObject = (
-                         (ldap.PERSONNAL_MEMBERSHIP, 'Membre classique'),
-                         (ldap.STUDENT_MEMBERSHIP, u'Tarif étudiant'),
-                        )
-        html = field('Type', h.select('paymentObject', [ldap.PERSONNAL_MEMBERSHIP], paymentObject))
-        html += field('Mode de paiement',
-                h.select('paymentMode', ['cheque'],
-                                (('cheque', u'Chèque'),
-                                 ('paypal', 'Paypal'),
-                                 ('payed', u'Pre-payé'))))
-        html += field(h.literal(u'Pr&eacute;cision (si d&eacute;j&agrave; pay&eacute;)'),
-                h.text('paymentComment', size='50'))
-        html += h.submit('save', h.literal(u'Adh&eacute;rer'), **{'class':'context'})
+            (ldap.PERSONNAL_MEMBERSHIP, 'Membre classique'),
+            (ldap.STUDENT_MEMBERSHIP, u'Tarif étudiant'),
+        )
+        html = field('Type', h.select('paymentObject',
+                                      [ldap.PERSONNAL_MEMBERSHIP],
+                                      paymentObject))
+        html += field(
+            'Mode de paiement',
+            h.select('paymentMode', ['cheque'],
+                     (('cheque', u'Chèque'),
+                     ('paypal', 'Paypal'),
+                     ('payed', u'Pre-payé'))))
+        html += field(h.literal(
+            u'Pr&eacute;cision (si d&eacute;j&agrave; pay&eacute;)'),
+            h.text('paymentComment', size='50'))
+        html += h.submit('save', h.literal(u'Adh&eacute;rer'),
+                         **{'class': 'context'})
         c.form = html
 
         # error message handling
@@ -269,8 +283,8 @@ class MyController(BaseController):
 
         if paymentMode == 'payed' and not paymentComment.strip():
             return redirect(h.url(controller='my',
-                                     action='subscribe_form',
-                                     error='payed'))
+                                  action='subscribe_form',
+                                  error='payed'))
 
         c.user = user
         c.signature = ldap.getUserByTitle('tresorier')
@@ -301,18 +315,19 @@ class MyController(BaseController):
         payment.invoiceReference = paymentComment
         user.append(payment)
 
-        mail = LDAPMailTemplate(name='new_subscription',
-                            subject=u"[AFPy-adhésion] Accusé de réception",
-                            paymentObject=paymentObject,
-                            paymentMode=paymentMode,
-                            paymentComment=paymentComment,
-                            )
+        mail = LDAPMailTemplate(
+            name='new_subscription',
+            subject=u"[AFPy-adhésion] Accusé de réception",
+            paymentObject=paymentObject,
+            paymentMode=paymentMode,
+            paymentComment=paymentComment,
+        )
 
         mail.send(user, cc='tresorerie@afpy.org')
 
         return render('/subscribe.mako')
 
-    def password_form(self,errors=''):
+    def password_form(self, errors=''):
         element = 'contents'
         errors = display_errors(errors)
         form = ''
@@ -324,9 +339,11 @@ class MyController(BaseController):
         form = tag('table', form)
         form += h.submit('validate', 'Valider', class_='context')
         return tag('h1', 'Changer mon mot de passe') + \
-               h.form(url=h.url.current(action='change_password'),
-                       class_="remote", onsubmit="return remote_form(this);", alt=element) + \
-               errors + form + h.end_form()
+            h.form(url=h.url.current(action='change_password'),
+                   class_="remote",
+                   onsubmit="return remote_form(this);",
+                   alt=element) + \
+            errors + form + h.end_form()
 
     def change_password(self):
         user = self.user
@@ -352,7 +369,7 @@ class MyController(BaseController):
                 mail.send(user.uid)
                 msg = 'Mot de passe modifié. Identifiez vous'
                 return redirect(
-                        'http://www.afpy.org/?portal_status_message=' + msg)
+                    'http://www.afpy.org/?portal_status_message=' + msg)
             else:
                 errors = [u"""Votre nouveau mot de passe doit faire au moins 6
                         caractères et être le même que la confirmation.
