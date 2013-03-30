@@ -12,6 +12,20 @@ from routes.middleware import RoutesMiddleware
 from members.config.environment import load_environment
 from afpy.ldap.authafpy import make_auth
 
+
+class ScriptName(object):
+
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        env = environ
+        if '.afpy.org' in environ['HTTP_HOST']:
+            env['SCRIPT_NAME'] = '/membres'
+            env['PATH_INFO'] = env['PATH_INFO'][len('/membres'):] or '/'
+        return self.app(environ, start_response)
+
+
 def make_app(global_conf, full_stack=True, **app_conf):
     """Create a Pylons WSGI application and return it
 
@@ -36,14 +50,14 @@ def make_app(global_conf, full_stack=True, **app_conf):
 
     # The Pylons WSGI app
     app = PylonsApp()
-    
+
     # CUSTOM MIDDLEWARE HERE (filtered by error handling middlewares)
     app = make_auth(app, config)
     # Routing/Session/Cache Middleware
     app = RoutesMiddleware(app, config['routes.map'])
     app = SessionMiddleware(app, config)
     app = CacheMiddleware(app, config)
-    
+
     if asbool(full_stack):
         # Handle Python exceptions
         app = ErrorHandler(app, global_conf, **config['pylons.errorware'])
@@ -58,8 +72,9 @@ def make_app(global_conf, full_stack=True, **app_conf):
     # Establish the Registry for this application
     app = RegistryManager(app)
 
-    # Static files (If running in production, and Apache or another web 
+    # Static files (If running in production, and Apache or another web
     # server is handling this static content, remove the following 2 lines)
     static_app = StaticURLParser(config['pylons.paths']['static_files'])
     app = Cascade([static_app, app])
+    app = ScriptName(app)
     return app
