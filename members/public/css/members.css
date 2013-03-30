@@ -1,0 +1,27 @@
+#wsgi_menu {
+    width: 20%;
+    float:left;
+}
+#content {
+    width: 79%;
+    float:left;
+}
+td#portal-column-two { display:none; }
+div#menu dl,
+div#menu dd,
+div#menu_admin dl,
+div#menu_admin dd
+{
+    margin:0;
+    padding:0;
+}
+div#menu_admin dl{
+    margin-top:1em;
+}
+.field_req {
+    color:red;
+}
+.payments_listing {
+    margin:0 !important;
+}
+

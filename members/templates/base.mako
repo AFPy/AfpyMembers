@@ -6,38 +6,18 @@
     ${h.javascript_link(request.script_name+'/javascripts/prototype.js',
 			request.script_name+'/javascripts/jquery-1.3.2.min.js',
 			request.script_name+'/javascripts/afpy.js')|n}
+    <link rel="stylesheet" href="${request.script_name}/css/members.css" type="text/css" />
     <script type="text/javascript">
       jQuery.noConflict();
     </script>
-    <style type="text/css">
-    td#portal-column-two { display:none; }
-    div#menu dl,
-    div#menu dd,
-    div#menu_admin dl,
-    div#menu_admin dd
-    {
-        margin:0;
-        padding:0;
-    }
-    div#menu_admin dl{
-        margin-top:1em;
-    }
-    .field_req {
-        color:red;
-    }
-    .payments_listing {
-        margin:0 !important;
-    }
-    </style>
   </head>
   <body>
-    %if request.GET.get('wsgi_menu'):
     <div id="wsgi_menu"></div>
-    %endif
     <div id="content">
-    <div id="letters"></div>
-    <div id="contents">
-        ${self.body()|n}
+      <div id="letters"></div>
+      <div id="contents">
+          ${self.body()|n}
+      </div>
     </div>
     <script language="javascript">
       jQuery(document).ready(function() {
@@ -45,6 +25,5 @@
             try {loadContents();} catch (e) {};
       });
     </script>
-    </div>
   </body>
 </html>

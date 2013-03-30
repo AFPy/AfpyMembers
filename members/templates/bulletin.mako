@@ -11,13 +11,8 @@
     <link rel="stylesheet" type="text/css" media="print"
           href="http://www.afpy.org/adhesion_print2.css" />
   </head>
-  <body>
-
-  <div class="bandeauPrint"><a href="javascript:window.print();"><img 
-src="/afpy_print.png" style="width: 627px; height: 62px; border: none;" 
-/></a></div>
-  <div>
-  <div class="entete_gauche">    
+  <body onload="javascript:window.print();"
+  <div class="entete_gauche">
       Login afpy.org :<br />
       Courriel :<br />
       Nom :<br />

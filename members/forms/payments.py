@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from members.forms import *
+from members.forms import *  # noqa
 from mako.template import Template
 from formalchemy.fields import SelectFieldRenderer, IntegerFieldRenderer
 from members.forms import FieldSet as BaseFieldSet
@@ -24,15 +24,20 @@ datetime.date(2005, 1, 1)
 
 '''
 
+
 class ObjectRenderer(SelectFieldRenderer):
+
     def render(self, **kwargs):
-        options = [(v.decode('utf-8'), k) \
-                        for k, v in sorted(ldap.PAYMENTS_OPTIONS.items())]
+        options = [(v.decode('utf-8'), k)
+                   for k, v in sorted(ldap.PAYMENTS_OPTIONS.items())]
         return super(ObjectRenderer, self).render(options=options, **kwargs)
+
     def render_readonly(self):
         return ldap.PAYMENTS_OPTIONS.get(self._value)
 
+
 class IntRenderer(IntegerFieldRenderer):
+
     def render(self, **kwargs):
         kwargs['size'] = '5'
         return IntegerFieldRenderer.render(self, **kwargs)
@@ -50,8 +55,10 @@ ${field.label_text}
 </tr>
 """.strip()
 
+
 class TemplateEngine(BaseTemplateEngine):
     prefix = 'payment'
+
 
 class FieldSet(BaseFieldSet):
     _render_header = staticmethod(Template(template_header).render_unicode)
@@ -61,10 +68,15 @@ class FieldSet(BaseFieldSet):
         return self._render_header(fieldset=self)
 
 PaymentForm = FieldSet(ldap.Payment)
-PaymentForm.configure(include=[PaymentForm.paymentDate.readonly(), PaymentForm.paymentObject.with_renderer(ObjectRenderer),
-                      PaymentForm.paymentAmount.with_renderer(IntRenderer), PaymentForm.invoiceReference])
+PaymentForm.configure(include=[
+    PaymentForm.paymentDate.readonly(),
+    PaymentForm.paymentObject.with_renderer(ObjectRenderer),
+    PaymentForm.paymentAmount.with_renderer(IntRenderer),
+    PaymentForm.invoiceReference])
 
 NewPaymentForm = FieldSet(ldap.Payment)
-NewPaymentForm.configure(include=[NewPaymentForm.paymentDate, NewPaymentForm.paymentObject.with_renderer(ObjectRenderer),
-                      NewPaymentForm.paymentAmount.with_renderer(IntRenderer), NewPaymentForm.invoiceReference])
-
+NewPaymentForm.configure(include=[
+    NewPaymentForm.paymentDate,
+    NewPaymentForm.paymentObject.with_renderer(ObjectRenderer),
+    NewPaymentForm.paymentAmount.with_renderer(IntRenderer),
+    NewPaymentForm.invoiceReference])
