@@ -14,7 +14,7 @@ class UtilsController(BaseController):
 
     def login(self):
         came_from = request.params.get('came_from')
-        if self.user and came_from and 'members' not in came_from:
+        if self.user and came_from and 'memb' not in came_from:
             return exc.HTTPFound(location=came_from)(
                 request.environ, self.start_response)
         user = request.environ.get('repoze.who.identity', {}).get('user', None)
