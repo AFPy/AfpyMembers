@@ -9,11 +9,16 @@ import members.lib.app_globals as app_globals
 import members.lib.helpers
 from members.config.routing import make_map
 
+
 def load_environment(global_conf, app_conf):
     """Configure the Pylons environment via the ``pylons.config``
     object
     """
     # Pylons paths
+    from ConfigObject import ConfigObject
+    cfg = ConfigObject(filename=os.path.expanduser('~/.afpy.cfg'))
+    app_conf['beaker.session.secret'] = '%s' % cfg.authtkt.shared_secret
+
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     paths = dict(root=root,
                  controllers=os.path.join(root, 'controllers'),
