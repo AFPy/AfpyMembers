@@ -2,6 +2,7 @@
 import datetime
 import logging
 
+from unidecode import unidecode
 from repoze.what import predicates
 from repoze.what.plugins.pylonshq import ControllerProtector
 
@@ -312,7 +313,7 @@ class MyController(BaseController):
         payment.paymentDate = paymentDate
         payment.paymentObject = paymentObject
         payment.paymentAmount = c.amount
-        payment.invoiceReference = paymentComment
+        payment.invoiceReference = unidecode(paymentComment)
         user.append(payment)
 
         mail = LDAPMailTemplate(
