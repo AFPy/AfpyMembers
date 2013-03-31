@@ -49,9 +49,6 @@ class RegisterController(BaseController):
             conn.add(user)
             user.change_password(passwd)
 
-            if not h.DEV_MOD:
-                manage_ZopeUser('add', user.uid, passwd)
-
             confirm_url = 'http://www.afpy.org' + h.url.current(
                                     action='confirm',
                                     uid=user.uid,

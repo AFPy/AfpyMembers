@@ -361,7 +361,6 @@ class MyController(BaseController):
             if len(new) >= 6 and new == confirm:
                 if not testing:
                     user.change_password(new)
-                    manage_ZopeUser('edit', str(user.uid), new)
 
                 mail = LDAPMailTemplate(name='send_password',
                                         subject='Votre password sur afpy.org',

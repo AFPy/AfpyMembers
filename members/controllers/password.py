@@ -2,7 +2,7 @@
 import logging
 
 from members.lib.base import *
-from members.lib.afpy_helpers import manage_ZopeUser, display_errors, ldap_field
+from members.lib.afpy_helpers import display_errors, ldap_field
 from webhelpers.html.tags import HTML
 from afpy.ldap import custom as ldap
 from afpy.mail import LDAPMailTemplate
@@ -60,7 +60,6 @@ class PasswordController(BaseController):
 
         if user:
             user.change_password(passwd)
-            manage_ZopeUser('edit', str(user.uid), passwd)
 
             mail = LDAPMailTemplate(name='send_password',
                                     subject='Votre mot de passe sur afpy.org',

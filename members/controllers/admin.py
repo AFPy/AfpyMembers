@@ -97,8 +97,6 @@ class AdminController(BaseController):
                 user.change_password(passwd)
 
                 if not h.DEV_MOD:
-                    manage_ZopeUser('add', uid, passwd)
-
                     # ml
                     mailman.subscribeTo('afpy-membres', user)
 
