@@ -68,7 +68,7 @@ def get_menu(menus, tag='dl', stag='dd', element='contents',
 def get_plone_skin(request, head=False):
     key = 'plone.data'
     if key not in request.environ:
-        url = 'http://dev.afpy.org'
+        url = 'http://www.afpy.org'
         doc = PyQuery(url=url)
         doc('#portal-searchbox, #portal-personaltools-wrapper').remove()
         data = {}

@@ -22,7 +22,8 @@ class ScriptName(object):
         env = environ
         if '.afpy.org' in environ['HTTP_HOST']:
             env['SCRIPT_NAME'] = '/membres'
-            env['PATH_INFO'] = env['PATH_INFO'][len('/membres'):] or '/'
+            if env['PATH_INFO'].startswith('/membres'):
+                env['PATH_INFO'] = env['PATH_INFO'][len('/membres'):] or '/'
         return self.app(environ, start_response)
 
 

@@ -19,7 +19,10 @@ class UtilsController(BaseController):
         #        request.environ, self.start_response)
         user = request.environ.get('repoze.who.identity', {}).get('user', None)
         if user is not None:
-            return exc.HTTPFound(location=request.script_name or '/')(
+            location = request.script_name or '/'
+            if location == '/membres':
+                location = '/membres/'
+            return exc.HTTPFound(location=location)(
                 request.environ, self.start_response)
         return render('/login.mako')
 

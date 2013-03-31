@@ -25,7 +25,7 @@
           <div id="portal-column-content" class="cell width-3:4 position-1:4">
             <div id="letters"></div>
             <div id="contents">
-<form method="post" action="${request.environ.get('SCRIPT_NAME', '')}/do_login">
+<form method="post" action="${request.script_name}/do_login">
 
 <fieldset>
 
