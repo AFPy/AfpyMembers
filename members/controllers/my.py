@@ -58,10 +58,9 @@ class MyController(BaseController):
                  ('Mon mot de passe',
                   h.url(controller='my', action='password_form')))
 
-        if self.user.expired:
-            menus = ((h.literal(
-                u"<span style='color:red'>Adhérer à l'afpy</span>"),
-                h.url('adhesion', no_remote='true')),) + menus
+        menus = ((h.literal(
+            u"<span style='" + (self.user.expired and "color:red;" or "color: grey;") + u"'>Adhérer ou renouveler son adhésion</span>"),
+            h.url('adhesion', no_remote='true')),) + menus
         html = h.get_menu(menus, empty='letters')
 
         if self.admin:
