@@ -5,11 +5,10 @@
       lang="fr">
   <head>
     <title></title>
-
     <link rel="stylesheet" type="text/css" media="screen"
-          href="http://www.afpy.org/adhesion_print.css" />
+          href="${request.script_name}/css/adhesion_print.css" />
     <link rel="stylesheet" type="text/css" media="print"
-          href="http://www.afpy.org/adhesion_print2.css" />
+          href="${request.script_name}/css/adhesion_print2.css" />
   </head>
   <body onload="javascript:window.print();"
   <div class="entete_gauche">

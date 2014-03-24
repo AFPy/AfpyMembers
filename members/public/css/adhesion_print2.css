@@ -1,0 +1,134 @@
+@page { size: 21cm 29.7cm portrait; } ;
+
+body {
+    background: White;
+    font-family: Georgia, Garamond, Times, "Times New Roman", Roman, serif;
+    font-size: 11pt 
+    color: Black;
+    margin: 0;
+    padding: 0;
+}
+
+.bandeauPrint {
+    display: none;
+}
+
+
+.entete_gauche {
+    position: absolute; 
+    top: 0cm;
+    left: 0cm;
+    width: 7cm;
+    text-align: left;
+    padding: 0.2cm 0.2cm 0.2cm 0.2cm;
+    font-weight: bold;
+    font-family: Tahoma, Verdana, 'Lucida Grande', Arial, Lucida, Geneva, Helvetica, sans-serif; 
+    font-size: 9pt;
+}
+
+.entete_droit {
+    position: absolute; 
+    top: 0cm;
+    left: 9.5cm;
+    width: 7cm;
+    text-align: left;
+    padding: 0.2cm 0.2cm 0.2cm 0.2cm;
+    font-weight: bold;
+    font-family: Tahoma, Verdana, 'Lucida Grande', Arial, Lucida, Geneva, Helvetica, sans-serif; 
+    font-size: 9pt;
+}
+
+
+.adresse {
+    position: absolute; 
+    border: 0.02cm solid #373F63;
+    top: 3.5cm;
+    left: 9.5cm;
+    width: 7cm;
+    text-align: center;
+    padding: 0.2cm 0.2cm 0.2cm 0.2cm;
+    color: #373F63;
+    font-weight: bold;
+    font-family: Tahoma, Verdana, 'Lucida Grande', Arial, Lucida, Geneva, Helvetica, sans-serif; 
+    font-size: 10pt;
+}
+
+
+.corps {
+    position: absolute; 
+    top: 10cm;
+    left: 0cm;
+    width: 17cm;
+    text-align: left;
+    padding: 0.2cm 0.2cm 0.2cm 0.2cm;
+    font-family: Georgia, Garamond, Times, "Times New Roman", Roman, serif;
+    font-size: 11pt ;
+}
+
+.signature {
+    margin-top: 2cm;
+    text-align: right;
+    font-weight: bold;
+    font-family: Tahoma, Verdana, 'Lucida Grande', Arial, Lucida, Geneva, Helvetica, sans-serif; 
+    font-size: 9pt;
+    color: #373F63;
+}
+
+
+
+.visualNoPrint {
+    /* Hides all the elements irrelevant for presentations */
+    display: none;
+}
+
+ul { 
+    list-style-type: square;
+    padding-left: 0.3cm;
+}
+
+
+p {
+    background: transparent;
+    border: none ;
+    padding: 0
+    margin: 0;
+    margin-top: 0.2 cm;
+    text-align: left;
+    font-family: Georgia, Garamond, Times, "Times New Roman", Roman, serif;
+    font-size: 11pt; 
+}
+
+
+
+h1, h2, h3, h4, h5, h6
+{
+    border: none;
+    font-family: Georgia, Garamond, Times, serif;
+    font-weight: bold;
+}
+
+
+pre {
+    border: 1pt dashed black;
+    white-space: pre;
+    font-size: 8pt;
+    overflow: auto;
+    padding: 1em 0;
+}
+
+
+a {
+    color: Black !important;
+    padding: 0 !important
+}
+
+a:link, a:visited {
+    color: #520;
+    background: transparent;
+    text-decoration: underline;
+}
+
+#content a:link:after, 
+#content a:visited:after {
+   content: " ( " attr(href) " ) ";
+}
