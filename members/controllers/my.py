@@ -53,7 +53,8 @@ class MyController(BaseController):
         """ left menu """
         user = self.user_id
         menus = ((u'Mes informations', h.url(controller='my', action='info')),
-                 ('Mes Listes', h.url(controller='my', action='listes')),
+                 # wait for 2021
+                 # ('Mes Listes', h.url(controller='my', action='listes')),
                  ('Mes paiements', h.url('payments', id=user)),
                  ('Mon mot de passe',
                   h.url(controller='my', action='password_form')))

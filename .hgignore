@@ -12,8 +12,11 @@ afpy.core
 afpy.ldap
 afpy.wsgi
 dumped_versions.cfg
+lib/
+include/
 .svn
 .installed.cfg
+pip-selfcheck.json
 *.egg-info
 *.swp
 *.pyc
